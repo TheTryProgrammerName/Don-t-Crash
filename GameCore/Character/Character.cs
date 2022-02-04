@@ -5,18 +5,17 @@ using System.Collections;
 public class Character : MonoBehaviour
 {
     [SerializeField] private CharacterControl _characterControl;
+    [SerializeField] private CharacterResizer _characterResizer;
 
     [SerializeField] private UnityEvent _death;
     [SerializeField] private UnityEvent _alive;
 
     [SerializeField] private Rigidbody2D _rigidbody;
-    [SerializeField] private Transform _transform;
 
     [SerializeField] private TimerController _timerController;
 
     private Vector2 _startPosition = new Vector2(-6, -11.255f);
     private Vector2 _direction;
-    private Vector3 _characterMinSize = new Vector3(0.5f, 0.5f, 0.5f);
     private Vector2 _vectorSpeed;
 
     private bool _characterIsAlive;
@@ -60,7 +59,7 @@ public class Character : MonoBehaviour
     {
         isPause = false;
 
-        _characterControl.enabled = true; //Включаем управление
+        _characterControl.enabled = true;
 
         _rigidbody.simulated = true;
     }
@@ -92,9 +91,8 @@ public class Character : MonoBehaviour
     {
         _characterControl.lockControl = true;
 
-        _rigidbody.constraints = RigidbodyConstraints2D.FreezePosition;
-
-        _transform.localScale = _characterMinSize;
+        _rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+        _characterResizer.resizeMin();
         Time.timeScale = _timeSpeedBoost;
 
         Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize / GameSpeed);
@@ -106,9 +104,9 @@ public class Character : MonoBehaviour
     {
         _characterControl.lockControl = false;
 
-        _transform.localScale = Vector2.one;
+        _characterResizer.resizeMax();
 
-        _rigidbody.constraints = RigidbodyConstraints2D.FreezePositionX;
+        _rigidbody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 
         Time.timeScale = _normalTimeSpeed;
     }

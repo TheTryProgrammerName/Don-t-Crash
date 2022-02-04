@@ -4,7 +4,6 @@ public class Initializer : MonoBehaviour
 {
     [SerializeField] private DebugUIController _debugUIController;
     [SerializeField] private ScoreUpdater _scoreUpdater;
-    [SerializeField] private GraphicsMover _graphicsMover;
     [SerializeField] private MenuScoreUpdater _menuScoreUpdater;
     [SerializeField] private PostController _postController;
     [SerializeField] private PostGenerator _postGenerator;
@@ -17,7 +16,6 @@ public class Initializer : MonoBehaviour
         _debugUIController.Initialize();
         _menuScoreUpdater.Initialize();
         _scoreUpdater.Initialize();
-        _graphicsMover.Initialize();
         _postController.Initialize();
         _postGenerator.Initialize();
         _developerSettings.Initizlize();

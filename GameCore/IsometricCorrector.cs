@@ -1,24 +1,38 @@
 using UnityEngine;
+using System.Collections;
 
 //Отвечает за правильное наложение персонажа на столбы
 public class IsometricCorrector : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _characterSprite;
-
     [SerializeField] private SpriteRenderer[] _postCubesSprites;
 
-    public bool isCharacterBeforePost {set; private get; }
+    private int _lastShortingOrder;
 
-    public void updateCharacterSortingOrder(int UpperCubeNumber)
+    public bool isCharacterBeforePost {set; private get; }
+    public bool lockChangeSortingOrder { set; private get; }
+
+    public void updateShortingOrder(int upperCubeNumber)
     {
+        int shortingOrder = _postCubesSprites[upperCubeNumber].sortingOrder - 1;
+        _lastShortingOrder = shortingOrder;
+
         if (!isCharacterBeforePost)
-        {
-            changeCharacterSortingOrder(_postCubesSprites[UpperCubeNumber].sortingOrder - 1);
+        {  
+            changeCharacterSortingOrder(shortingOrder);   
         }
     }
 
     public void changeCharacterSortingOrder(int SortingOrder)
     {
-        _characterSprite.sortingOrder = SortingOrder;
+        if (!lockChangeSortingOrder)
+        {
+            _characterSprite.sortingOrder = SortingOrder;
+        }
+    }
+
+    public void applyLastShoprtingOrder()
+    {
+        changeCharacterSortingOrder(_lastShortingOrder);
     }
 }

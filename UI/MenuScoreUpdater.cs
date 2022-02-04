@@ -10,11 +10,14 @@ public class MenuScoreUpdater : MonoBehaviour
     public void Initialize()
     {
         _saveData = new SaveData();
-        _recordText.text = _saveData.LoadInt("Record").ToString();
+        int Record = _saveData.LoadInt("Record");
+        UpdateRecord(Record);
     }
 
     public void UpdateRecord(int record)
     {
         _recordText.text = record.ToString();
+        _recordText.autoSizeTextContainer = false;
+        _recordText.autoSizeTextContainer = true;
     }
 }

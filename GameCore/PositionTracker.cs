@@ -15,7 +15,7 @@ public class PositionTracker : MonoBehaviour
     private Vector2 _postTeleportPosition = new Vector2(14, 0.75f);
     private List<Vector2> PostCubesPositions;
 
-    private int characterBeforePostPoint = -3, _recordPoint = -6, _postTeleportationPoint = -38, _startLineOffPoint = -15;
+    private int characterBeforePostPoint = -3, characterAfterNextPostPoint = 16, _recordPoint = -6, _postTeleportationPoint = -38, _startLineOffPoint = -15;
 
     public bool CharacterIsAlive { set; private get; } = true;
 
@@ -59,6 +59,11 @@ public class PositionTracker : MonoBehaviour
 
         while (CharacterIsAlive)
         {
+            while (PostTransform.position.x > characterAfterNextPostPoint)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+
             _isometricCorrector.isCharacterBeforePost = true;
             _isometricCorrector.changeCharacterSortingOrder(100);
 
@@ -68,8 +73,7 @@ public class PositionTracker : MonoBehaviour
             }
 
             _isometricCorrector.isCharacterBeforePost = false;
-
-            _isometricCorrector.changeCharacterSortingOrder(3);
+            _isometricCorrector.applyLastShoprtingOrder();
 
             while (PostTransform.position.x > _recordPoint)
             {
@@ -135,7 +139,7 @@ public class PositionTracker : MonoBehaviour
             if (isValueChanged)
             {
                 UpperCubePosition = PostCubesPositions[UpperCubeNumber];
-                _isometricCorrector.updateCharacterSortingOrder(UpperCubeNumber);
+                _isometricCorrector.updateShortingOrder(UpperCubeNumber);
                 isValueChanged = false;
             }
 

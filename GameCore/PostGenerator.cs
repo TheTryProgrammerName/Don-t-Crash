@@ -7,6 +7,8 @@ public class PostGenerator : MonoBehaviour
     [SerializeField] ScoreUpdater _scoreUpdater;
     [SerializeField] TextMeshProUGUI[] text;
 
+    private Utilits _utilits;
+
     //Из этих чисел выбирается минимальное и максимальное количество выключаемых кубов
     //Далее они уменьшаются, пока не становятся равны 1
     private int _minOffedCubesCount1 = 5, _minOffedCubesCount2 = 4;
@@ -14,32 +16,27 @@ public class PostGenerator : MonoBehaviour
 
     private int _generationNumber; //Номер генерации
     private int _difficultLevel;
-    private int _minProbalityDifficultChange = 60; //Минимальный шанс смены сложности. Если генерируется число меньше этого - сложность не меняется
     private int _generationNumberCoef; //Велечина прибавления коэффициента рекорда, помноженная на 100, отвечает за скорость возрастания сложности
 
-    private float _startScoreCoef;
+    private float _scoreCoefWhenDifficultChange;
+    private float _scoreCoefWhenDifficultChangeIncrement = 0.6f; //Когда сложность меняется _scoreCoefWhenDifficultChange = ScoreCoef + это значение
 
     public float ScoreCoef { private get; set; }
 
     public void Initialize()
     {
+        _utilits = new Utilits();
         _generationNumberCoef = (int)(_scoreUpdater.AddScoreCoefForRecord * 100);
-        _startScoreCoef = _scoreUpdater.ScoreCoef;
     }
 
     public Queue<bool> GenerateCubesCondition(int CubesCount)
     {
         Queue<bool> CubesCondition = new Queue<bool>();
-        //Рассчитывать этьо изходя из вероятности смены сложности
+
         int FirstIntGenerateChance = 100 -_generationNumber * _generationNumberCoef;
 
-        if (FirstIntGenerateChance < 0)
-        {
-            FirstIntGenerateChance = 0;
-        }
-
-        int MinOffCubesCount = GetRandomValue(_minOffedCubesCount1, _minOffedCubesCount2, FirstIntGenerateChance);
-        int MaxOffCubesCount = GetRandomValue(_maxOffedCubesCount1, _maxOffedCubesCount2, FirstIntGenerateChance);
+        int MinOffCubesCount = _utilits.GetOneOfTwoValues(_minOffedCubesCount1, _minOffedCubesCount2, FirstIntGenerateChance);
+        int MaxOffCubesCount = _utilits.GetOneOfTwoValues(_maxOffedCubesCount1, _maxOffedCubesCount2, FirstIntGenerateChance);
         int OffCubesCount = Random.Range(MinOffCubesCount, MaxOffCubesCount);
 
         text[0].text = "FirstIntGenerateChance: " + FirstIntGenerateChance; //Del
@@ -104,16 +101,7 @@ public class PostGenerator : MonoBehaviour
     private void TryGhangeDifficult()
     {
         int probality = Random.Range(0, 100);
-        int DifficultChangeChance = Mathf.RoundToInt((ScoreCoef - _startScoreCoef - _difficultLevel) * 100);
-        //Сохранять scoreCoef, на котором сменилась сложность начинать считать DifficultChangeChance от этого числа
-        if (DifficultChangeChance <= _minProbalityDifficultChange)
-        { 
-            DifficultChangeChance = 0;
-        }
-        else
-        {
-            DifficultChangeChance = DifficultChangeChance - _minProbalityDifficultChange;
-        }
+        int DifficultChangeChance = Mathf.RoundToInt((ScoreCoef - _scoreCoefWhenDifficultChange) * 100);
 
         text[3].text = "ScoreCoef: " + ScoreCoef.ToString("0.00"); ; //Del
         text[4].text = "DifficultChangeProbality: " + probality; //Del
@@ -122,6 +110,7 @@ public class PostGenerator : MonoBehaviour
         if (probality < DifficultChangeChance)
         {
             _difficultLevel++;
+            _scoreCoefWhenDifficultChange = ScoreCoef + _scoreCoefWhenDifficultChangeIncrement;
             _generationNumber = 0;
             
             if (_minOffedCubesCount1 > 1)
@@ -145,22 +134,6 @@ public class PostGenerator : MonoBehaviour
             }
         }
         text[6].text = "DifficultLevel: " + _difficultLevel; //Del
-    }
-
-    //Выдаёт первое значение с вероятностью chance
-    //Если не выходит - выдаёт второе 
-    private int GetRandomValue(int value1, int value2, int chance)
-    {
-        int probality = Random.Range(0, 100);
-
-        if (probality < chance)
-        {
-            return value1;
-        }
-        else
-        {
-            return value2;
-        }
     }
 
     public void reset()

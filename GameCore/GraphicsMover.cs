@@ -3,11 +3,7 @@ using System.Collections;
 
 public class GraphicsMover : MonoBehaviour
 {
-    [SerializeField] private GameObject _startLine, _shadow;
-
-    [SerializeField] private Rigidbody2D _characterRB, _post1RB, _post2RB, _startLineRB; //Получаем координаты персонажа и взависимости от них двигаем тень
-
-    private float _characterStartPositionY;
+    [SerializeField] private Rigidbody2D _characterRB, _post1RB, _post2RB, _startLineRB, _shadowRB; //Получаем координаты персонажа и взависимости от них двигаем тень
 
     public float GameSpeed { private get; set; }
 
@@ -21,11 +17,6 @@ public class GraphicsMover : MonoBehaviour
     private Vector2 StartLineStartPosition = new Vector2(-1, -11.6875f);
     private Vector2 ShadowStartPosition = new Vector2(-3.25f, -12.505f);
     private Vector2 VectorSpeed;
-
-    public void Initialize()
-    {
-        _characterStartPositionY = _characterRB.position.y;
-    }
 
     public void start()
     {
@@ -43,9 +34,9 @@ public class GraphicsMover : MonoBehaviour
         _post1RB.transform.position = Post1StartPosition; //Возвращаем на свои места
         _post2RB.transform.position = Post2StartPosition;
 
-        _startLine.transform.position = StartLineStartPosition;
+        _startLineRB.transform.position = StartLineStartPosition;
 
-        _shadow.transform.position = ShadowStartPosition;
+        _shadowRB.transform.position = ShadowStartPosition;
     }
 
     public void pause()
@@ -55,6 +46,7 @@ public class GraphicsMover : MonoBehaviour
         _post1RB.velocity = Vector2.zero;
         _post2RB.velocity = Vector2.zero;
         _startLineRB.velocity = Vector2.zero;
+        _shadowRB.velocity = Vector2.zero;
     }
 
     public void unPause()
@@ -101,7 +93,7 @@ public class GraphicsMover : MonoBehaviour
         {
             if (!isPause)
             {
-                _shadow.transform.position = new Vector2(ShadowStartPosition.x + _characterRB.position.y - _characterStartPositionY, ShadowStartPosition.y);
+                _shadowRB.velocity = new Vector2(_characterRB.velocity.y, 0);
             }
 
             yield return new WaitForFixedUpdate();

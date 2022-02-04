@@ -182,4 +182,19 @@ public class Utilits
 
         return intList;
     }
+
+
+    public int GetOneOfTwoValues(int value1, int value2, int firstIntGetChance)
+    {
+        int probality = Random.Range(0, 100);
+
+        if (probality < firstIntGetChance)
+        {
+            return value1;
+        }
+        else
+        {
+            return value2;
+        }
+    }
 }

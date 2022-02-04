@@ -9,6 +9,7 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private Character _character;
     [SerializeField] private SpeedChanger _speedChanger;
     [SerializeField] private UIController _UIController;
+    [SerializeField] private IsometricCorrector _isometricCorrector;
 
     [SerializeField] private Rigidbody2D _characterRB;
 
@@ -25,6 +26,7 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _characterMassCondition;
     [SerializeField] private TextMeshProUGUI _characterAngularDragCondition;
     [SerializeField] private TextMeshProUGUI _characterGravityCondition;
+    [SerializeField] private TextMeshProUGUI _timeScaleCondition;
     [SerializeField] private TextMeshProUGUI _debugModeCondition;
 
     private Utilits _utilits;
@@ -53,6 +55,7 @@ public class DeveloperSettings : MonoBehaviour
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
+        _timeScaleCondition.text = Time.timeScale.ToString("0.0");
     }
 
     public void EnableImmortality(bool condition)
@@ -64,10 +67,14 @@ public class DeveloperSettings : MonoBehaviour
         if (condition == true)
         {
             _immortalityCondition.text = _On;
+            _isometricCorrector.changeCharacterSortingOrder(100);
+            _isometricCorrector.lockChangeSortingOrder = true;
         }
         else
         {
             _immortalityCondition.text = _Off;
+            _isometricCorrector.lockChangeSortingOrder = false;
+            _isometricCorrector.applyLastShoprtingOrder();
         }
     }
 
@@ -162,6 +169,13 @@ public class DeveloperSettings : MonoBehaviour
         _characterRB.gravityScale = _characterRB.gravityScale + NewValue;
 
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
+    }
+
+    public void ChangeTimeScale(float NewValue)
+    {
+        Time.timeScale = Time.timeScale + NewValue;
+
+        _timeScaleCondition.text = Time.timeScale.ToString("0.0");
     }
 
     public void EnableDebugMode(bool condition)
