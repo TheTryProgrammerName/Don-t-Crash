@@ -3,14 +3,8 @@ using TMPro;
 
 public class FPSCounter : MonoBehaviour
 {
-    private int _FPS;
-    private int _frameBufferLenght = 60;
-    private int[] _frameBuffer;
-    private int _frameBufferIndex;
-    private int _biggestFPS, _lowestFPS;
-
-    [SerializeField]
-    private TextMeshProUGUI _FPSText;
+    [SerializeField] private TextMeshProUGUI _FPSText;
+    private int _frameLimit = 120;
 
     private string[] _FPS0to120 =
     {
@@ -24,84 +18,22 @@ public class FPSCounter : MonoBehaviour
         "71", "72", "73", "74", "75", "76", "77", "78", "79", "80",
         "81", "82", "83", "84", "85", "86", "87", "88", "89", "90",
         "91", "92", "93", "94", "95", "96", "97", "98", "99", "100",
-        "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
+        "101", "102", "103", "104", "105", "106", "107", "108", "109", "110",
         "111", "112", "113", "114", "115", "116", "117", "118", "119", "120",
         "120+"
     };
 
     private void Update()
     {
-        if (_frameBuffer == null || _frameBufferLenght != _frameBuffer.Length)
+        int FPS = (int)(1f / Time.unscaledDeltaTime);
+
+        if (FPS <= _frameLimit)
         {
-            InitializeBuffer();
-        }
-
-        UpdateBuffer();
-        CalculateFPS();
-    }
-
-    private void InitializeBuffer()
-    {
-        _frameBuffer = new int[_frameBufferLenght];
-        _frameBufferIndex = 0;
-    }
-
-    private void UpdateBuffer()
-    {
-        _frameBuffer[_frameBufferIndex++] = (int)(1f / Time.unscaledDeltaTime);
-        if (_frameBufferIndex >=_frameBufferLenght)
-        {
-            _frameBufferIndex = 0;
-        }
-    }
-
-    private void CalculateFPS()
-    {
-        int Sum = 0;
-        int Lowest = int.MaxValue;
-        int Biggest = 0;
-
-        for (int i = 0; i < _frameBufferLenght; i++)
-        {
-            int fps = _frameBuffer[i];
-            Sum += fps;
-
-            if (fps > Biggest)
-            {
-                Biggest = fps;
-            }
-
-            if (fps < Lowest)
-            {
-                Lowest = fps;
-            }
-        }
-
-        _biggestFPS = Biggest;
-        _lowestFPS = Lowest;
-
-        _FPS = Sum / _frameBufferLenght;
-
-        if (_biggestFPS <= 120)
-        {
-            _FPSText.text = "FPS: " + "Mid." + _FPS0to120[_FPS] + " Max." + _FPS0to120[_biggestFPS] + " Min." + _FPS0to120[_lowestFPS];
+            _FPSText.text = _FPS0to120[FPS];
         }
         else
         {
-            string sFPS = "0";
-            string sLowestFPS = "0";
-
-            if (_FPS >= 120)
-            {
-                sFPS = _FPS0to120[122];
-            }
-
-            if (_lowestFPS >= 120)
-            {
-                sLowestFPS = _FPS0to120[122];
-            }
-
-            _FPSText.text = "FPS: " + "Mid." + sFPS + " Max." + _FPS0to120[122] + " Min." + sLowestFPS;
+            _FPSText.text = _FPS0to120[121];
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using TMPro;
 
 //Отвечает за скорость игры
 public class SpeedChanger : MonoBehaviour
@@ -8,20 +7,28 @@ public class SpeedChanger : MonoBehaviour
     [SerializeField] private Character _character;
     [SerializeField] private GraphicsMover _graphicsMover;
 
-    [SerializeField] private TextMeshProUGUI _currentSpeedText;
-    [SerializeField] private TextMeshProUGUI _SpeedForFrameText;
+    private DebugInfoSender _debugInfoSender;
 
     public float CurrentSpeed;
     public float MaxSpeed = 6.0f;
     public float MinSpeed = 1.0f;
     private bool _isPause;
 
-    public float SpeedForFrame = 0.0002f; //Прибавление скорости за кадр
+    public float SpeedForFrame = 0.0001f; //Прибавление скорости за кадр
     public bool CharacterIsAlive { set; private get; }
 
     public void Initialize()
     {
+        _debugInfoSender = new DebugInfoSender();
+        InitializeDebug();
+
         CurrentSpeed = MinSpeed;
+    }
+
+    private void InitializeDebug()
+    {
+        _debugInfoSender.InitializeInfo("SpeedChanger", "CurrentSpeed: ");
+        _debugInfoSender.InitializeInfo("SpeedChanger", "SpeedForFrame: ");
     }
 
     public void start()
@@ -59,8 +66,8 @@ public class SpeedChanger : MonoBehaviour
                 _graphicsMover.GameSpeed = CurrentSpeed;
             }
 
-            _currentSpeedText.text = "CurrentSpeed: " + CurrentSpeed.ToString("0.0000");
-            _SpeedForFrameText.text = "SpeedForFrame: " + SpeedForFrame.ToString("0.0000");
+            _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed: ", CurrentSpeed.ToString("0.0000"));
+            _debugInfoSender.SendInfo("SpeedChanger", "SpeedForFrame: ", SpeedForFrame.ToString("0.0000"));
         }
 
         yield break;

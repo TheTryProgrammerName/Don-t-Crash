@@ -19,6 +19,7 @@ public class Character : MonoBehaviour
     private Vector2 _vectorSpeed;
 
     private bool _characterIsAlive;
+    private bool _isFastFly;
 
     private float _timeToNormolize = 1.6f, _timeSpeedBoost = 6f, _normalTimeSpeed = 1f;
 
@@ -89,26 +90,27 @@ public class Character : MonoBehaviour
 
     public void FastFly()
     {
-        _characterControl.lockControl = true;
+        if (!_isFastFly)
+        {
+            _rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+            _characterResizer.resizeMin();
+            Time.timeScale = _timeSpeedBoost;
 
-        _rigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
-        _characterResizer.resizeMin();
-        Time.timeScale = _timeSpeedBoost;
+            Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize / GameSpeed);
 
-        Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize / GameSpeed);
-
-        StartCoroutine(CheckTimerTime(TimerToNormolaze));
+            StartCoroutine(CheckTimerTime(TimerToNormolaze));
+            _isFastFly = true;
+        }
     }
 
     private void Normolaze()
     {
-        _characterControl.lockControl = false;
-
         _characterResizer.resizeMax();
 
         _rigidbody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 
         Time.timeScale = _normalTimeSpeed;
+        _isFastFly = false;
     }
 
     private IEnumerator CheckTimerTime(Timer timer)

@@ -9,7 +9,7 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private Character _character;
     [SerializeField] private SpeedChanger _speedChanger;
     [SerializeField] private UIController _UIController;
-    [SerializeField] private IsometricCorrector _isometricCorrector;
+    [SerializeField] private DebugInfoHandler _debugInfoHandler;
 
     [SerializeField] private Rigidbody2D _characterRB;
 
@@ -22,11 +22,12 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _addGameSpeedForFrameCondition;
     [SerializeField] private TextMeshProUGUI _startGameDifficultCondition;
     [SerializeField] private TextMeshProUGUI _currentGameDifficultCondition;
-    [SerializeField] private TextMeshProUGUI _addScoreCoefForRecordCondition;
+    [SerializeField] private TextMeshProUGUI _difficultForRecordCondition;
     [SerializeField] private TextMeshProUGUI _characterMassCondition;
     [SerializeField] private TextMeshProUGUI _characterAngularDragCondition;
     [SerializeField] private TextMeshProUGUI _characterGravityCondition;
     [SerializeField] private TextMeshProUGUI _timeScaleCondition;
+    [SerializeField] private TextMeshProUGUI _debugInfoHandlerCondition;
     [SerializeField] private TextMeshProUGUI _debugModeCondition;
 
     private Utilits _utilits;
@@ -37,6 +38,7 @@ public class DeveloperSettings : MonoBehaviour
     public void Initizlize()
     {
         _immortalityCondition.text = _Off;
+        _debugInfoHandlerCondition.text = _Off;
         _debugModeCondition.text = _Off;
         _utilits = new Utilits();
     }
@@ -51,7 +53,7 @@ public class DeveloperSettings : MonoBehaviour
         _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
         _currentGameDifficultCondition.text = _scoreUpdater.ScoreCoef.ToString("0.00");
-        _addScoreCoefForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.000");
+        _difficultForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.00");
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
@@ -67,14 +69,10 @@ public class DeveloperSettings : MonoBehaviour
         if (condition == true)
         {
             _immortalityCondition.text = _On;
-            _isometricCorrector.changeCharacterSortingOrder(100);
-            _isometricCorrector.lockChangeSortingOrder = true;
         }
         else
         {
             _immortalityCondition.text = _Off;
-            _isometricCorrector.lockChangeSortingOrder = false;
-            _isometricCorrector.applyLastShoprtingOrder();
         }
     }
 
@@ -147,7 +145,7 @@ public class DeveloperSettings : MonoBehaviour
     {
         _scoreUpdater.AddScoreCoefForRecord = _scoreUpdater.AddScoreCoefForRecord + NewValue;
 
-        _addScoreCoefForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.000");
+        _difficultForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.00");
     }
 
     public void ChangeCharacterMass(float NewValue)
@@ -176,6 +174,22 @@ public class DeveloperSettings : MonoBehaviour
         Time.timeScale = Time.timeScale + NewValue;
 
         _timeScaleCondition.text = Time.timeScale.ToString("0.0");
+    }
+
+    public void EnableDebugInfoHandler(bool condition)
+    {
+        condition = _utilits.LoopBoolValue(_debugInfoHandler.handle, condition);
+
+        if (condition == true)
+        {
+            _debugInfoHandler.handle = true;
+            _debugInfoHandlerCondition.text = _On;
+        }
+        else
+        {
+            _debugInfoHandler.handle = false;
+            _debugInfoHandlerCondition.text = _Off;
+        }
     }
 
     public void EnableDebugMode(bool condition)

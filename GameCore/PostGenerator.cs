@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using TMPro;
 
 public class PostGenerator : MonoBehaviour
 {
     [SerializeField] ScoreUpdater _scoreUpdater;
-    [SerializeField] TextMeshProUGUI[] text;
 
     private Utilits _utilits;
+    private DebugInfoSender _debugInfoSender;
 
     //Из этих чисел выбирается минимальное и максимальное количество выключаемых кубов
     //Далее они уменьшаются, пока не становятся равны 1
@@ -26,22 +25,35 @@ public class PostGenerator : MonoBehaviour
     public void Initialize()
     {
         _utilits = new Utilits();
+        _debugInfoSender = new DebugInfoSender();
+        InitializeDebug();
         _generationNumberCoef = (int)(_scoreUpdater.AddScoreCoefForRecord * 100);
+    }
+
+    private void InitializeDebug()
+    {
+        _debugInfoSender.InitializeInfo("postGenerator", "FirstIntGenerateChance: ");
+        _debugInfoSender.InitializeInfo("postGenerator", "MinOffCubesCount: ");
+        _debugInfoSender.InitializeInfo("postGenerator", "MaxOffCubesCount: ");
+        _debugInfoSender.InitializeInfo("postGenerator", "ScoreCoef:");
+        _debugInfoSender.InitializeInfo("postGenerator", "DifficultChangeProbality:");
+        _debugInfoSender.InitializeInfo("postGenerator", "DifficultChangeChance:");
+        _debugInfoSender.InitializeInfo("postGenerator", "DifficultLevel:");
     }
 
     public Queue<bool> GenerateCubesCondition(int CubesCount)
     {
         Queue<bool> CubesCondition = new Queue<bool>();
 
-        int FirstIntGenerateChance = 100 -_generationNumber * _generationNumberCoef;
+        int FirstIntGenerateChance = 100 - _generationNumber * _generationNumberCoef;
 
         int MinOffCubesCount = _utilits.GetOneOfTwoValues(_minOffedCubesCount1, _minOffedCubesCount2, FirstIntGenerateChance);
         int MaxOffCubesCount = _utilits.GetOneOfTwoValues(_maxOffedCubesCount1, _maxOffedCubesCount2, FirstIntGenerateChance);
         int OffCubesCount = Random.Range(MinOffCubesCount, MaxOffCubesCount);
 
-        text[0].text = "FirstIntGenerateChance: " + FirstIntGenerateChance; //Del
-        text[1].text = "MinOffCubesCount: " + MinOffCubesCount; //Del
-        text[2].text = "MaxOffCubesCount: " + MaxOffCubesCount; //Del
+        _debugInfoSender.SendInfo("postGenerator", "FirstIntGenerateChance: ", FirstIntGenerateChance.ToString());
+        _debugInfoSender.SendInfo("postGenerator", "MinOffCubesCount: ", MinOffCubesCount.ToString());
+        _debugInfoSender.SendInfo("postGenerator", "MaxOffCubesCount: ", MaxOffCubesCount.ToString());
 
         if (OffCubesCount > 1) //Если больше одного
         {
@@ -103,16 +115,16 @@ public class PostGenerator : MonoBehaviour
         int probality = Random.Range(0, 100);
         int DifficultChangeChance = Mathf.RoundToInt((ScoreCoef - _scoreCoefWhenDifficultChange) * 100);
 
-        text[3].text = "ScoreCoef: " + ScoreCoef.ToString("0.00"); ; //Del
-        text[4].text = "DifficultChangeProbality: " + probality; //Del
-        text[5].text = "DifficultChangeChance: " + DifficultChangeChance; //Del
+        _debugInfoSender.SendInfo("postGenerator", "ScoreCoef:", ScoreCoef.ToString("0.00"));
+        _debugInfoSender.SendInfo("postGenerator", "DifficultChangeProbality:", probality.ToString());
+        _debugInfoSender.SendInfo("postGenerator", "DifficultChangeChance:", DifficultChangeChance.ToString());
 
         if (probality < DifficultChangeChance)
         {
             _difficultLevel++;
             _scoreCoefWhenDifficultChange = ScoreCoef + _scoreCoefWhenDifficultChangeIncrement;
             _generationNumber = 0;
-            
+
             if (_minOffedCubesCount1 > 1)
             {
                 _minOffedCubesCount1--;
@@ -133,7 +145,8 @@ public class PostGenerator : MonoBehaviour
                 _maxOffedCubesCount2--;
             }
         }
-        text[6].text = "DifficultLevel: " + _difficultLevel; //Del
+
+        _debugInfoSender.SendInfo("postGenerator", "DifficultLevel:", _difficultLevel.ToString());
     }
 
     public void reset()

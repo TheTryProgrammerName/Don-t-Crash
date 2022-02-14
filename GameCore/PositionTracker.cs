@@ -1,47 +1,23 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PositionTracker : MonoBehaviour
 {
     [SerializeField] private GameObject _startLine, _post1, _post2;
-    [SerializeField] private Transform _characterTransform;
     [SerializeField] private ScoreUpdater _scoreUpdater;
     [SerializeField] private PostController _postController;
-    [SerializeField] private IsometricCorrector _isometricCorrector;
 
-    private Utilits utilits;
-
-    private Vector2 _postTeleportPosition = new Vector2(14, 0.75f);
-    private List<Vector2> PostCubesPositions;
-
-    private int characterBeforePostPoint = -3, characterAfterNextPostPoint = 16, _recordPoint = -6, _postTeleportationPoint = -38, _startLineOffPoint = -15;
+    private int _recordPoint = -6, _startLineOffPoint = -15;
+    private float _postTeleportationPointFrom = -38f;
+    private float _postSpasing = 27f;
 
     public bool CharacterIsAlive { set; private get; } = true;
-
-    public void Initialize()
-    {
-        utilits = new Utilits();
-        PostCubesPositions = new List<Vector2>();
-
-        Queue<GameObject> postCubes = utilits.GetChildrenQueue(_post1);
-
-        int postCubesCount = postCubes.Count;
-
-        for (int i = 0; i < postCubesCount; i++)
-        {
-            PostCubesPositions.Add(postCubes.Dequeue().transform.position);
-        }
-
-        PostCubesPositions.Reverse();
-    }
 
     public void start()
     {
         StartCoroutine(PostTrack(_post1));
         StartCoroutine(PostTrack(_post2));
         StartCoroutine(TapToStartTrack());
-        StartCoroutine(CharacterTrack());
     }
 
     public void reset()
@@ -59,22 +35,6 @@ public class PositionTracker : MonoBehaviour
 
         while (CharacterIsAlive)
         {
-            while (PostTransform.position.x > characterAfterNextPostPoint)
-            {
-                yield return new WaitForFixedUpdate();
-            }
-
-            _isometricCorrector.isCharacterBeforePost = true;
-            _isometricCorrector.changeCharacterSortingOrder(100);
-
-            while (PostTransform.position.x > characterBeforePostPoint)
-            {
-                yield return new WaitForFixedUpdate();
-            }
-
-            _isometricCorrector.isCharacterBeforePost = false;
-            _isometricCorrector.applyLastShoprtingOrder();
-
             while (PostTransform.position.x > _recordPoint)
             {
                 yield return new WaitForFixedUpdate();
@@ -82,12 +42,23 @@ public class PositionTracker : MonoBehaviour
 
             _scoreUpdater.UpdateScore();
 
-            while (PostTransform.position.x > _postTeleportationPoint)
+            while (PostTransform.position.x > _postTeleportationPointFrom)
             {
                 yield return new WaitForFixedUpdate();
             }
 
-            PostTransform.position = _postTeleportPosition;
+            float teleportTo;
+
+            if (PostTransform.position.x < _post1.transform.position.x)
+            {
+                teleportTo = _post1.transform.position.x + _postSpasing;
+            }
+            else
+            {
+                teleportTo = _post2.transform.position.x + _postSpasing;
+            }
+
+            PostTransform.position = new Vector2(teleportTo, PostTransform.position.y);
 
             StartCoroutine(PostTrack(Post));
 
@@ -111,39 +82,6 @@ public class PositionTracker : MonoBehaviour
             _startLine.SetActive(false);
 
             yield break;
-        }
-
-        yield break;
-    }
-
-    private IEnumerator CharacterTrack()
-    {
-        int UpperCubeNumber = 1;
-        bool isValueChanged = false;
-        Vector2 UpperCubePosition = PostCubesPositions[UpperCubeNumber];
-
-        while (CharacterIsAlive)
-        {
-            if (_characterTransform.position.y > UpperCubePosition.y && UpperCubeNumber < PostCubesPositions.Count - 1)
-            {
-                UpperCubeNumber++;
-                isValueChanged = true;
-            }
-
-            if (_characterTransform.position.y < UpperCubePosition.y && UpperCubeNumber > 1)
-            {
-                UpperCubeNumber--;
-                isValueChanged = true;
-            }
-
-            if (isValueChanged)
-            {
-                UpperCubePosition = PostCubesPositions[UpperCubeNumber];
-                _isometricCorrector.updateShortingOrder(UpperCubeNumber);
-                isValueChanged = false;
-            }
-
-            yield return new WaitForFixedUpdate();
         }
 
         yield break;

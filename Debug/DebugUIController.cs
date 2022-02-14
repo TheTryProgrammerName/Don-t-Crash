@@ -1,39 +1,50 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class DebugUIController : MonoBehaviour
 {
-    [SerializeField] private FPSCounter _FPSCounter;
-    [SerializeField] private LogViewer _logViewer;
-    [SerializeField] private UIController _UIController;
+    [SerializeField] private DebugInfoHandler _debugInfoHandler;
+    [SerializeField] private DebugInfoDrawer _debugInfoDrawer;
+    [SerializeField] private TextMeshProUGUI groupName;
 
-    [SerializeField] private TextMeshProUGUI modeName;
-    [SerializeField] string[] modes;
+    private List<string> _debugInfoGroups;
 
-    private int _modeNuimber;
-    private int _lastModeNuimber;
+    private int _drawingGroupNumber;
+    private int _lastGroupNuimber;
 
     public void Initialize()
     {
-        _lastModeNuimber = modes.Length - 1;
+        _debugInfoGroups = new List<string>();
+
+        for (int i = 0; i < _debugInfoHandler.debugGroups.Count; i++)
+        {
+            _debugInfoGroups.Add(_debugInfoHandler.debugGroups[i].Name);
+        }
+
+        _lastGroupNuimber = _debugInfoGroups.Count - 1;
+
+        SwitchHandleGroup(0);
     }
 
-    public void SwitchMode(int modeNumber)
+    public void SwitchHandleGroup(int number)
     {
-        _modeNuimber += modeNumber;
+        _drawingGroupNumber += number;
 
-        if (_modeNuimber > _lastModeNuimber)
+        if (_drawingGroupNumber > _lastGroupNuimber)
         {
-            _modeNuimber = 0;
+            _drawingGroupNumber = 0;
         }
 
-        if (_modeNuimber < 0)
+        if (_drawingGroupNumber < 0)
         {
-            _modeNuimber = _lastModeNuimber;
+            _drawingGroupNumber = _lastGroupNuimber;
         }
 
-        modeName.text = modes[_modeNuimber];
+        _debugInfoHandler.switchHandleGroup(_debugInfoGroups[_drawingGroupNumber]);
+        _debugInfoDrawer.onSwitchHandleGroup(_debugInfoHandler.debugGroups[_drawingGroupNumber].Info.Count);
+        _debugInfoDrawer.DrawInfo(_debugInfoHandler.debugGroups[_drawingGroupNumber]);
 
-        _UIController.SetPreset("Debug"+ modes[_modeNuimber]);
+        groupName.text = _debugInfoGroups[_drawingGroupNumber];
     }
 }
