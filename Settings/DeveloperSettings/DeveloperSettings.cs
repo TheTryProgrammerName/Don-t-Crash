@@ -7,6 +7,7 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private ScoreUpdater _scoreUpdater;
     [SerializeField] private GraphicsMover _graphicsMover;
     [SerializeField] private Character _character;
+    [SerializeField] private CharacterMover _characterMover;
     [SerializeField] private SpeedChanger _speedChanger;
     [SerializeField] private UIController _UIController;
     [SerializeField] private DebugInfoHandler _debugInfoHandler;
@@ -45,12 +46,12 @@ public class DeveloperSettings : MonoBehaviour
 
     public void UpdateConditions()
     {
-        _postSpeedCondition.text = _graphicsMover.Speed.ToString();
-        _characterSpeedCondition.text = _character.Speed.ToString();
+        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0.00");
+        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0.00");
         _startGameDifficultCondition.text = _scoreUpdater.MinScoreCoef.ToString("0.00");
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.0");
         _currentGameSpeedCondition.text = _speedChanger.CurrentSpeed.ToString("0.00");
-        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
+        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.0");
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
         _currentGameDifficultCondition.text = _scoreUpdater.ScoreCoef.ToString("0.00");
         _difficultForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.00");
@@ -76,16 +77,16 @@ public class DeveloperSettings : MonoBehaviour
         }
     }
 
-    public void ChangePostSpeed(int NewSpeed)
+    public void ChangeGraphicsSpeed(float NewSpeed)
     {
-        _graphicsMover.Speed = _graphicsMover.Speed + NewSpeed;
-        _postSpeedCondition.text = _graphicsMover.Speed.ToString();
+        _graphicsMover.GraphicsSpeed = _graphicsMover.GraphicsSpeed + NewSpeed;
+        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0.00");
     }
 
-    public void ChangeCharacterSpeed(int NewSpeed)
+    public void ChangeCharacterSpeed(float NewSpeed)
     {
-        _character.Speed = _character.Speed + NewSpeed;
-        _characterSpeedCondition.text = _character.Speed.ToString();
+        _characterMover.CharacterSpeed = _characterMover.CharacterSpeed + NewSpeed;
+        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0.00");
     }
 
     public void ChangeStartGameSpeed(float NewSpeed)
@@ -94,7 +95,7 @@ public class DeveloperSettings : MonoBehaviour
 
         _speedChanger.MinSpeed = _utilits.CheckFloatHighLimit(_speedChanger.MinSpeed, _speedChanger.MaxSpeed);
 
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.0");
     }
 
     public void ChangeCurrentGameSpeed(float NewSpeed)
@@ -113,7 +114,7 @@ public class DeveloperSettings : MonoBehaviour
 
         _speedChanger.MaxSpeed = _utilits.CheckFloatLowLimit(_speedChanger.MaxSpeed, _speedChanger.CurrentSpeed);
 
-        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
+        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.0");
     }
 
     public void ChangeSpeedForFrame(float NewSpeed)

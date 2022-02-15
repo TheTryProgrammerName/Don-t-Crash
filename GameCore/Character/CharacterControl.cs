@@ -2,20 +2,21 @@
 
 public class CharacterControl : SwipeManager
 {
-    [SerializeField] private Character _character;
+    [SerializeField] private CharacterMover _characterMover;
+    [SerializeField] private Mover _mover;
 
     public override void SwipeUp()
     {
-        _character.MoveUp();
+        _characterMover.ChangeDirectionUp();
     }
 
     public override void SwipeDown()
     {
-        _character.MoveDown();
+        _characterMover.ChangeDirectionDown();
     }
 
     public override void SwipeRight()
     {
-        _character.FastFly();
+        _mover.FastFly();
     }
 }
