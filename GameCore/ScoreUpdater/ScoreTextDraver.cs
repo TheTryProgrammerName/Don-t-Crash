@@ -1,79 +1,56 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic;
+using Unity.VectorGraphics;
 
-public class ScoreTextDraver : MonoBehaviour
+public class ScoreTextDraver : Instantiator
 {
-    [SerializeField] private Sprite[] _spriteNumbers; //Список спрайтов для отрисоввки
-    [SerializeField] private SpriteGroup[] _spriteGroup; //Спрайтрендереры в которых будут отображаться нужные спрайты
-    [SerializeField] private GameObject[] _numbersGroup;
+    [SerializeField] private Sprite[] _numbersSprites; //Список спрайтов для отрисоввки 
+    [SerializeField] private Vector2[] _numbersSizes; //Содержит размер каждого числа
 
-    private int _numbersGroupIndex;
+    private List<SVGImage> _numbersImages;
+    private List<RectTransform> _numbersRectTransforms;
+    private List<int> _splitedScore;
 
-    private Utilits _utilits = new Utilits();
+    private Utilits _utilits;
+
+    public void Initialize()
+    {
+        _utilits = new Utilits();
+        _instantiateObjects = new List<GameObject>();
+        _numbersImages = new List<SVGImage>();
+        _numbersRectTransforms = new List<RectTransform>();
+        _splitedScore = new List<int>();
+    }
 
     public void DrawScoreText(int Score)
     {
-        if (Score < 10001)
+        int ScoreLenght = Score.ToString().Length;
+
+        if (ScoreLenght > _instantiateObjects.Count) //Если нужно нарисовать больше символов, чем у нас спрайтов на сцене
         {
-            int ScoreLenght = Score.ToString().Length - 1;
-
-            if (ScoreLenght > _numbersGroupIndex || ScoreLenght < _numbersGroupIndex) //Если число символов больше или меньше, чем предполагает текущая группа
-            {
-                SelectNumbersGroup(ScoreLenght); //Включаем подходящую
-            }
-
-            for (int i = 0; i < _numbersGroupIndex + 1; i++) //Прифигачиваем нужные спрайты
-            {
-                SpriteRenderer[] Sprites = _spriteGroup[_numbersGroupIndex].Sprites;
-                Sprites[i].sprite = GetSprite(i, Score);
-            }
-        }
-        else
-        {
-            //Выводить надпись и побеждать
-        }
-    }
-
-    private Sprite GetSprite(int TryNumber, int Score)
-    {
-        List<int> SplitScore = _utilits.intSplit(Score);
-
-        if (_numbersGroupIndex < 4)
-        {
-            int DrawingSpriteNumber = SplitScore[TryNumber];
-            return _spriteNumbers[DrawingSpriteNumber];
-        }
-        else
-        {
-            return _spriteNumbers[10];
-        }
-    }
-
-    private void SelectNumbersGroup(int index)
-    {
-        _numbersGroupIndex = index;
-
-        for (int i = 0; i < _numbersGroup.Length; i++)
-        {
-            if (i != index)
-            {
-                _numbersGroup[i].gameObject.SetActive(false);
-            }
+            CreateObject(); //Добавляем новый спрайт
+            _numbersImages.Add(_instantiateObjects[ScoreLenght - 1].GetComponent<SVGImage>());
+            _numbersRectTransforms.Add(_instantiateObjects[ScoreLenght - 1].GetComponent<RectTransform>());
         }
 
-        _numbersGroup[index].gameObject.SetActive(true);
+        _utilits.intSplit(Score, _splitedScore);
+
+        for (int i = 0; i < ScoreLenght; i++)
+        {
+            _numbersRectTransforms[i].sizeDelta = _numbersSizes[_splitedScore[i]];
+            _numbersImages[i].sprite = _numbersSprites[_splitedScore[i]];
+        }
     }
 
     public void reset()
     {
-        DrawScoreText(0);
-    } 
+        int instantiateObjectsCount = _instantiateObjects.Count;
 
-    [Serializable]
-    public class SpriteGroup
-    {
-        public string Name;
-        public SpriteRenderer[] Sprites;
-    }
+        for (int i = 0; i < instantiateObjectsCount - 1; i++) //Удаляем все лишние объекты
+        {
+            DestroyObject();
+            _numbersImages.RemoveAt(0);
+            _numbersRectTransforms.RemoveAt(0);
+        }
+    } 
 }

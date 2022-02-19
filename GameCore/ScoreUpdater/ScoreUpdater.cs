@@ -17,19 +17,24 @@ public class ScoreUpdater : MonoBehaviour
     public void Initialize()
     {
         ScoreCoef = MinScoreCoef;
-        _scoreTextDraver.DrawScoreText(_score);
+        sendScore();
     }
 
     public void start()
     {
-        sendScore();
+        UpdateScore();
     }
 
-    public void UpdateScore()
+    public void AddScore()
     {
         _score++;
         CalculateRecordCoef();
 
+        UpdateScore();
+    }
+
+    private void UpdateScore()
+    {
         sendScore();
         _scoreTextDraver.DrawScoreText(_score);
     }
@@ -70,6 +75,5 @@ public class ScoreUpdater : MonoBehaviour
 
         _score = 0;
         ScoreCoef = MinScoreCoef;
-        sendScore();
     }
 }

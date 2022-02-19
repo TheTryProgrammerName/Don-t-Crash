@@ -14,7 +14,7 @@ public class PostGenerator : MonoBehaviour
     private int _maxOffedCubesCount1 = 7, _maxOffedCubesCount2 = 5;
 
     private int _generationNumber; //Номер генерации
-    private int _difficultLevel;
+    private int _difficultLevel; //Нужно только для отображения при активации DebugMode
     private int _generationNumberCoef; //Велечина прибавления коэффициента рекорда, помноженная на 100, отвечает за скорость возрастания сложности
 
     private float _scoreCoefWhenDifficultChange;
@@ -28,6 +28,7 @@ public class PostGenerator : MonoBehaviour
         _debugInfoSender = new DebugInfoSender();
         InitializeDebug();
         _generationNumberCoef = (int)(_scoreUpdater.AddScoreCoefForRecord * 100);
+        _scoreCoefWhenDifficultChange = ScoreCoef + _scoreCoefWhenDifficultChangeIncrement;
     }
 
     private void InitializeDebug()
@@ -46,7 +47,6 @@ public class PostGenerator : MonoBehaviour
         Queue<bool> CubesCondition = new Queue<bool>();
 
         int FirstIntGenerateChance = 100 - _generationNumber * _generationNumberCoef;
-
         int MinOffCubesCount = _utilits.GetOneOfTwoValues(_minOffedCubesCount1, _minOffedCubesCount2, FirstIntGenerateChance);
         int MaxOffCubesCount = _utilits.GetOneOfTwoValues(_maxOffedCubesCount1, _maxOffedCubesCount2, FirstIntGenerateChance);
         int OffCubesCount = Random.Range(MinOffCubesCount, MaxOffCubesCount);

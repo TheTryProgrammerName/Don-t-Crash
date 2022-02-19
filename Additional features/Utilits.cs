@@ -162,25 +162,23 @@ public class Utilits
     //Далее уменьшили число value на 2 * 100 т.е. исключили из него сотни
     //И повторили тоже самое с ним, начиная с действия 5
 
-    public List<int> intSplit(int value)
+    public void intSplit(int value, List<int> listForWriting)
     {
         int ValueLenght = value.ToString().Length;
         int extent = ValueLenght;
 
-        List<int> intList = new List<int>();
+        listForWriting.Clear();
 
         for (int i = 0; i < ValueLenght; i++)
         {
             int TenInextent = intExponentiate(10, extent) / 10;
             int BiggestNumberInValue = value / TenInextent;
 
-            intList.Add(BiggestNumberInValue);
+            listForWriting.Add(BiggestNumberInValue);
 
             value = value - BiggestNumberInValue * TenInextent;
             extent--;
         }
-
-        return intList;
     }
 
 

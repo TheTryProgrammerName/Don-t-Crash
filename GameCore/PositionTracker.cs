@@ -8,6 +8,7 @@ public class PositionTracker : MonoBehaviour
     [SerializeField] private PostController _postController;
 
     private int _recordPoint = -6, _startLineOffPoint = -15;
+    private float _postBehindTheScreenPoint = 13.3f;
     private float _postTeleportationPointFrom = -38f;
     private float _postSpasing = 27f;
 
@@ -31,33 +32,29 @@ public class PositionTracker : MonoBehaviour
     {
         Transform PostTransform = Post.transform;
 
-        _postController.GeneratePost(Post);
-
         while (CharacterIsAlive)
         {
+            while (PostTransform.position.x > _postBehindTheScreenPoint)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+
+            _postController.GeneratePost(Post);
+
             while (PostTransform.position.x > _recordPoint)
             {
                 yield return new WaitForFixedUpdate();
             }
 
-            _scoreUpdater.UpdateScore();
+            _scoreUpdater.AddScore();
 
             while (PostTransform.position.x > _postTeleportationPointFrom)
             {
                 yield return new WaitForFixedUpdate();
             }
 
-            float teleportTo;
-
-            if (PostTransform.position.x < _post1.transform.position.x)
-            {
-                teleportTo = _post1.transform.position.x + _postSpasing;
-            }
-            else
-            {
-                teleportTo = _post2.transform.position.x + _postSpasing;
-            }
-
+            GameObject nextPost = getNextPost();
+            float teleportTo = nextPost.transform.position.x + _postSpasing;
             PostTransform.position = new Vector2(teleportTo, PostTransform.position.y);
 
             StartCoroutine(PostTrack(Post));
@@ -66,6 +63,18 @@ public class PositionTracker : MonoBehaviour
         }
 
         yield break;
+    }
+
+    private GameObject getNextPost()
+    {
+        if (_post1.transform.position.x > _post2.transform.position.x)
+        {
+            return _post1;
+        }
+        else
+        {
+            return _post2;
+        }
     }
 
     private IEnumerator TapToStartTrack()
