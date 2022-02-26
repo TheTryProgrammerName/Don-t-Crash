@@ -5,18 +5,17 @@ public class SpeedChanger : MonoBehaviour
 {
     private DebugInfoSender _debugInfoSender;
 
-    public float CurrentSpeed;
-    public float MaxSpeed = 60.0f;
-    public float MinSpeed = 10.0f;
+    public float MaxSpeed = 6.0f;
+    public float MinSpeed = 1.0f;
 
-    public float SpeedForFrame = 0.001f; //Прибавление скорости за кадр
+    public float SpeedForFrame = 0.0001f; //Прибавление скорости за кадр
 
     public void Initialize()
     {
         _debugInfoSender = new DebugInfoSender();
         InitializeDebug();
 
-        CurrentSpeed = MinSpeed;
+        Time.timeScale = MinSpeed;
     }
 
     private void InitializeDebug()
@@ -27,18 +26,17 @@ public class SpeedChanger : MonoBehaviour
 
     public void reset()
     {
-        CurrentSpeed = MinSpeed;
+        Time.timeScale = MinSpeed;
 
         StopAllCoroutines();
     }
 
     public void ChangeSpeed()
     {
-        if (CurrentSpeed <= MaxSpeed && CurrentSpeed >= MinSpeed)
+        if (Time.timeScale <= MaxSpeed && Time.timeScale >= MinSpeed)
         {
-            CurrentSpeed += SpeedForFrame;
-
-            _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed: ", CurrentSpeed.ToString("0.0000"));
+            Time.timeScale += SpeedForFrame;
+            _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed: ", Time.timeScale.ToString("0.0000"));
             _debugInfoSender.SendInfo("SpeedChanger", "SpeedForFrame: ", SpeedForFrame.ToString("0.0000"));
         }
     }

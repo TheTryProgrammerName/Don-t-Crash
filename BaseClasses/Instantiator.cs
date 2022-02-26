@@ -3,8 +3,8 @@ using UnityEngine;
 
 public abstract class Instantiator : MonoBehaviour
 {
-    [SerializeField] private Transform _container;
     [SerializeField] private GameObject _prefab;
+    public RectTransform _container;
 
     public List<GameObject> _instantiateObjects;
 

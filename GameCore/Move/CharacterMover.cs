@@ -8,8 +8,7 @@ public class CharacterMover : MonoBehaviour
     private Vector2 _direction;
     private Vector2 _vectorSpeed;
 
-    public float GameSpeed { private get; set; }
-    public float CharacterSpeed = 6f;
+    public float CharacterSpeed = 60f;
 
     public void reset()
     {
@@ -41,7 +40,7 @@ public class CharacterMover : MonoBehaviour
 
     public void Move()
     {
-        _vectorSpeed = GameSpeed * CharacterSpeed * _direction * Time.fixedDeltaTime;
+        _vectorSpeed = CharacterSpeed * _direction * Time.fixedDeltaTime;
         _characterRigidbody.AddForce(_vectorSpeed);
     }
 }

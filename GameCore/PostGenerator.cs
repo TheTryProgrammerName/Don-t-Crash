@@ -16,6 +16,7 @@ public class PostGenerator : MonoBehaviour
     private int _generationNumber; //Номер генерации
     private int _difficultLevel; //Нужно только для отображения при активации DebugMode
     private int _generationNumberCoef; //Велечина прибавления коэффициента рекорда, помноженная на 100, отвечает за скорость возрастания сложности
+    private int _offTwoCubesInARowChance = 100; //Базовый шанс выключить два куба подряд
 
     private float _scoreCoefWhenDifficultChange;
     private float _scoreCoefWhenDifficultChangeIncrement = 0.6f; //Когда сложность меняется _scoreCoefWhenDifficultChange = ScoreCoef + это значение
@@ -71,6 +72,36 @@ public class PostGenerator : MonoBehaviour
 
                 OffedCubesNumberstList.Add(CubesCountList[OffedCubeNumber]); //Добавили его номер в список выключаемых
                 CubesCountList.Remove(CubesCountList[OffedCubeNumber]); //Убрали из списка доступных
+            }
+
+            int probality = Random.Range(0, 100);
+
+            if (probality <= _offTwoCubesInARowChance)
+            {
+                List<int> cubesWhichWeCanOff = new List<int>();
+
+                for (int i = 0; i < CubesCount - 1; i++)
+                {
+                    //Если куб выключен а следующий включен
+                    if (OffedCubesNumberstList.Contains(i) && !OffedCubesNumberstList.Contains(i + 1))
+                    {
+                        if (!cubesWhichWeCanOff.Contains(i + 1))
+                        {
+                            cubesWhichWeCanOff.Add(i + 1);
+                        }
+                    } //Или если куб включен, а следующий выключен
+                    else if (!OffedCubesNumberstList.Contains(i) && OffedCubesNumberstList.Contains(i + 1))
+                    {
+                        if (!cubesWhichWeCanOff.Contains(i))
+                        {
+                            cubesWhichWeCanOff.Add(i);
+                        }
+                    }
+                }
+
+                int randomCubeIndex = Random.Range(0, cubesWhichWeCanOff.Count);
+
+                CubesCountList.Add(cubesWhichWeCanOff[randomCubeIndex]);
             }
 
             CubesCountList.Sort();
@@ -158,5 +189,7 @@ public class PostGenerator : MonoBehaviour
 
         _generationNumber = 0;
         _difficultLevel = 0;
+
+        _offTwoCubesInARowChance = 100;
     }
 }

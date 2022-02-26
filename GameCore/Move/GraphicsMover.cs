@@ -5,15 +5,13 @@ public class GraphicsMover : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D _characterRB, _post1RB, _post2RB, _startLineRB, _shadowRB; //Получаем координаты персонажа и взависимости от них двигаем тень
 
-    public float GameSpeed { private get; set; }
-
-    public float GraphicsSpeed = 24f;
-
     private Vector2 Post1StartPosition = new Vector2(18.2f, 0.75f);
     private Vector2 Post2StartPosition = new Vector2(45.2f, 0.75f);
     private Vector2 StartLineStartPosition = new Vector2(-1, -11.6875f);
     private Vector2 ShadowStartPosition = new Vector2(-3.25f, -12.505f);
     private Vector2 VectorSpeed;
+
+    public float GraphicsSpeed = 240f;
 
     public void reset()
     {
@@ -42,7 +40,7 @@ public class GraphicsMover : MonoBehaviour
 
     private void MovePosts()
     {
-        VectorSpeed = GameSpeed * GraphicsSpeed * -transform.right * Time.fixedDeltaTime;
+        VectorSpeed = GraphicsSpeed * -transform.right * Time.fixedDeltaTime;
 
         _post1RB.velocity = VectorSpeed;
         _post2RB.velocity = VectorSpeed;

@@ -27,7 +27,6 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _characterMassCondition;
     [SerializeField] private TextMeshProUGUI _characterAngularDragCondition;
     [SerializeField] private TextMeshProUGUI _characterGravityCondition;
-    [SerializeField] private TextMeshProUGUI _timeScaleCondition;
     [SerializeField] private TextMeshProUGUI _debugInfoHandlerCondition;
     [SerializeField] private TextMeshProUGUI _debugModeCondition;
 
@@ -46,19 +45,18 @@ public class DeveloperSettings : MonoBehaviour
 
     public void UpdateConditions()
     {
-        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0.00");
-        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0.00");
+        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0");
+        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0");
         _startGameDifficultCondition.text = _scoreUpdater.MinScoreCoef.ToString("0.00");
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.0");
-        _currentGameSpeedCondition.text = _speedChanger.CurrentSpeed.ToString("0.00");
-        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.0");
+        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+        _currentGameSpeedCondition.text = Time.timeScale.ToString("0.00");
+        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
         _currentGameDifficultCondition.text = _scoreUpdater.ScoreCoef.ToString("0.00");
         _difficultForRecordCondition.text = _scoreUpdater.AddScoreCoefForRecord.ToString("0.00");
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
-        _timeScaleCondition.text = Time.timeScale.ToString("0.0");
     }
 
     public void EnableImmortality(bool condition)
@@ -80,13 +78,13 @@ public class DeveloperSettings : MonoBehaviour
     public void ChangeGraphicsSpeed(float NewSpeed)
     {
         _graphicsMover.GraphicsSpeed = _graphicsMover.GraphicsSpeed + NewSpeed;
-        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0.00");
+        _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0");
     }
 
     public void ChangeCharacterSpeed(float NewSpeed)
     {
         _characterMover.CharacterSpeed = _characterMover.CharacterSpeed + NewSpeed;
-        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0.00");
+        _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0");
     }
 
     public void ChangeStartGameSpeed(float NewSpeed)
@@ -95,26 +93,26 @@ public class DeveloperSettings : MonoBehaviour
 
         _speedChanger.MinSpeed = _utilits.CheckFloatHighLimit(_speedChanger.MinSpeed, _speedChanger.MaxSpeed);
 
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.0");
+        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
     }
 
     public void ChangeCurrentGameSpeed(float NewSpeed)
     {
-        _speedChanger.CurrentSpeed = _speedChanger.CurrentSpeed + NewSpeed;
+        Time.timeScale = Time.timeScale + NewSpeed;
 
-        _speedChanger.CurrentSpeed = _utilits.CheckFloatHighLimit(_speedChanger.CurrentSpeed, _speedChanger.MaxSpeed);
-        _speedChanger.CurrentSpeed = _utilits.CheckFloatLowLimit(_speedChanger.CurrentSpeed, _speedChanger.MinSpeed);
+        Time.timeScale = _utilits.CheckFloatHighLimit(Time.timeScale, _speedChanger.MaxSpeed);
+        Time.timeScale = _utilits.CheckFloatLowLimit(Time.timeScale, _speedChanger.MinSpeed);
 
-        _currentGameSpeedCondition.text = _speedChanger.CurrentSpeed.ToString("0.00");
+        _currentGameSpeedCondition.text = Time.timeScale.ToString("0.00");
     }
 
     public void ChangeMaxGameSpeed(float NewSpeed)
     {
         _speedChanger.MaxSpeed = _speedChanger.MaxSpeed + NewSpeed;
 
-        _speedChanger.MaxSpeed = _utilits.CheckFloatLowLimit(_speedChanger.MaxSpeed, _speedChanger.CurrentSpeed);
+        _speedChanger.MaxSpeed = _utilits.CheckFloatLowLimit(_speedChanger.MaxSpeed, Time.timeScale);
 
-        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.0");
+        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
     }
 
     public void ChangeSpeedForFrame(float NewSpeed)
@@ -168,13 +166,6 @@ public class DeveloperSettings : MonoBehaviour
         _characterRB.gravityScale = _characterRB.gravityScale + NewValue;
 
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
-    }
-
-    public void ChangeTimeScale(float NewValue)
-    {
-        Time.timeScale = Time.timeScale + NewValue;
-
-        _timeScaleCondition.text = Time.timeScale.ToString("0.0");
     }
 
     public void EnableDebugInfoHandler(bool condition)

@@ -34,21 +34,21 @@ public class PositionTracker : MonoBehaviour
 
         while (CharacterIsAlive)
         {
-            while (PostTransform.position.x > _postBehindTheScreenPoint)
+            while (PostTransform.position.x >= _postBehindTheScreenPoint)
             {
                 yield return new WaitForFixedUpdate();
             }
 
             _postController.GeneratePost(Post);
 
-            while (PostTransform.position.x > _recordPoint)
+            while (PostTransform.position.x >= _recordPoint)
             {
                 yield return new WaitForFixedUpdate();
             }
 
             _scoreUpdater.AddScore();
 
-            while (PostTransform.position.x > _postTeleportationPointFrom)
+            while (PostTransform.position.x >= _postTeleportationPointFrom)
             {
                 yield return new WaitForFixedUpdate();
             }
@@ -83,7 +83,7 @@ public class PositionTracker : MonoBehaviour
 
         while (CharacterIsAlive)
         {
-            while (StartLineTransform.position.x > _startLineOffPoint)
+            while (StartLineTransform.position.x >= _startLineOffPoint)
             {
                 yield return new WaitForFixedUpdate();
             }

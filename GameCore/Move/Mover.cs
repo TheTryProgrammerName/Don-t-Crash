@@ -15,8 +15,8 @@ public class Mover : MonoBehaviour
     private bool _isPause;
     private bool _isFastFly;
 
-    private float _timeToNormolize = 16f, _timeSpeedBoost = 6f;
-    private float _currentGameSpeedBeforeBoost;
+    private float _timeToNormolize = 2f, _timeSpeedBoost = 6f;
+    private float _timeScaleBeforeBoost;
 
     public bool characterIsAlive { private get; set; }
 
@@ -50,8 +50,6 @@ public class Mover : MonoBehaviour
         if (!_isPause && characterIsAlive)
         {
             _speedChanger.ChangeSpeed();
-            _characterMover.GameSpeed = _speedChanger.CurrentSpeed;
-            _graphicsMover.GameSpeed = _speedChanger.CurrentSpeed;
 
             _characterMover.Move();
             _graphicsMover.Move();
@@ -65,12 +63,11 @@ public class Mover : MonoBehaviour
             _characterRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
             _characterResizer.resizeMin();
 
-            _currentGameSpeedBeforeBoost = _speedChanger.CurrentSpeed;
             _speedChanger.MaxSpeed = _speedChanger.MaxSpeed * _timeSpeedBoost;
-            _speedChanger.SpeedForFrame = _speedChanger.SpeedForFrame * _timeSpeedBoost;
-            _speedChanger.CurrentSpeed = _speedChanger.CurrentSpeed * _timeSpeedBoost;
+            _timeScaleBeforeBoost = Time.timeScale;
+            Time.timeScale = Time.timeScale * _timeSpeedBoost;
 
-            Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize / _speedChanger.CurrentSpeed);
+            Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize);
             StartCoroutine(CheckTimerTime(TimerToNormolaze));
             _isFastFly = true;
         }
@@ -81,10 +78,8 @@ public class Mover : MonoBehaviour
         _characterResizer.resizeMax();
         _characterRigidbody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 
-        _speedChanger.SpeedForFrame = _speedChanger.SpeedForFrame / _timeSpeedBoost;
-        _speedChanger.CurrentSpeed = _currentGameSpeedBeforeBoost + _speedChanger.CurrentSpeed - _currentGameSpeedBeforeBoost * _timeSpeedBoost;
-        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed / _timeSpeedBoost;
-        
+        Time.timeScale = _timeScaleBeforeBoost + Time.timeScale - _timeScaleBeforeBoost * _timeSpeedBoost;
+
         _isFastFly = false;
     }
 
