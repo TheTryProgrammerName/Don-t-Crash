@@ -42,4 +42,14 @@ public class DebugInfoDrawer : Instantiator
             _instantiateObjects[i].GetComponent<TextMeshProUGUI>().text = info[i].Name + info[i].Value;
         }
     }
+
+    public void DestroyAll()
+    {
+        int instantiateObjectsCount = _instantiateObjects.Count;
+
+        for (int i = 0; i < instantiateObjectsCount; i++)
+        {
+            DestroyObject();
+        }
+    }
 }

@@ -3,70 +3,73 @@ using System.Collections.Generic;
 
 public class PostGenerator : MonoBehaviour
 {
-    [SerializeField] ScoreUpdater _scoreUpdater;
-
     private Utilits _utilits;
     private DebugInfoSender _debugInfoSender;
 
-    //Из этих чисел выбирается минимальное и максимальное количество выключаемых кубов
-    //Далее они уменьшаются, пока не становятся равны 1
-    private int _minOffedCubesCount1 = 5, _minOffedCubesCount2 = 4;
-    private int _maxOffedCubesCount1 = 7, _maxOffedCubesCount2 = 5;
+    private int _minOffedCubesCount = 5;
+    private int _maxOffedCubesCount = 7;
+
+    private int _minMinOffedCubesCount = 3;
+    private int _minMaxOffedCubesCount = 4;
 
     private int _generationNumber; //Номер генерации
     private int _difficultLevel; //Нужно только для отображения при активации DebugMode
-    private int _generationNumberCoef; //Велечина прибавления коэффициента рекорда, помноженная на 100, отвечает за скорость возрастания сложности
-    private int _offTwoCubesInARowChance = 100; //Базовый шанс выключить два куба подряд
 
-    private float _scoreCoefWhenDifficultChange;
-    private float _scoreCoefWhenDifficultChangeIncrement = 0.6f; //Когда сложность меняется _scoreCoefWhenDifficultChange = ScoreCoef + это значение
+    private int _minOffTwoCubesInARowChance = 100, _maxOffTwoCubesInARowChance = 100; //Базовый шанс выключить два куба подряд
+    private int _minOffTwoCubesInARowChance1 = 5, _minOffTwoCubesInARowChance2 = 15; //Минимальбные шансы выключить два куба подряд
+    private int _subtractMinOffTwoCubesInARowChance, _subtractMaxOffTwoCubesInARowChance; //Отнимать эти значения от соотсветствующих чисел при смене сложности
 
-    public float ScoreCoef { private get; set; }
+    private float _difficultCoef; //Коэфициент сложности текущего _difficultLevel, когда становится равен 1, сложность повышается
+    private float _subtractCoef = 1.75f;
+
+    public float AddDifficultCoefForGeneration;
 
     public void Initialize()
     {
         _utilits = new Utilits();
         _debugInfoSender = new DebugInfoSender();
         InitializeDebug();
-        _generationNumberCoef = (int)(_scoreUpdater.AddScoreCoefForRecord * 100);
-        _scoreCoefWhenDifficultChange = ScoreCoef + _scoreCoefWhenDifficultChangeIncrement;
+
+        _subtractMinOffTwoCubesInARowChance = (int)((_minOffTwoCubesInARowChance - _minOffTwoCubesInARowChance1) / ((_minOffedCubesCount - _minMinOffedCubesCount) * _subtractCoef));
+        _subtractMaxOffTwoCubesInARowChance = (int)((_maxOffTwoCubesInARowChance - _minOffTwoCubesInARowChance2) / ((_maxOffedCubesCount - _minMaxOffedCubesCount) * _subtractCoef));
     }
 
     private void InitializeDebug()
     {
-        _debugInfoSender.InitializeInfo("postGenerator", "FirstIntGenerateChance: ");
-        _debugInfoSender.InitializeInfo("postGenerator", "MinOffCubesCount: ");
-        _debugInfoSender.InitializeInfo("postGenerator", "MaxOffCubesCount: ");
-        _debugInfoSender.InitializeInfo("postGenerator", "ScoreCoef:");
-        _debugInfoSender.InitializeInfo("postGenerator", "DifficultChangeProbality:");
-        _debugInfoSender.InitializeInfo("postGenerator", "DifficultChangeChance:");
-        _debugInfoSender.InitializeInfo("postGenerator", "DifficultLevel:");
+        _debugInfoSender.RegisterInfo("postGenerator", "DifficultCoef: ");
+        _debugInfoSender.RegisterInfo("postGenerator", "DifficultLevel: ");
+        _debugInfoSender.RegisterInfo("postGenerator", "OffTwoCubesInARowProbality: ");
+        _debugInfoSender.RegisterInfo("postGenerator", "MinOffTwoCubesInARowChance: ");
+        _debugInfoSender.RegisterInfo("postGenerator", "MaxOffTwoCubesInARowChance: ");
+        _debugInfoSender.RegisterInfo("postGenerator", "OffTwoCubesInARowChance: ");
     }
 
     public Queue<bool> GenerateCubesCondition(int CubesCount)
     {
         Queue<bool> CubesCondition = new Queue<bool>();
 
-        int FirstIntGenerateChance = 100 - _generationNumber * _generationNumberCoef;
-        int MinOffCubesCount = _utilits.GetOneOfTwoValues(_minOffedCubesCount1, _minOffedCubesCount2, FirstIntGenerateChance);
-        int MaxOffCubesCount = _utilits.GetOneOfTwoValues(_maxOffedCubesCount1, _maxOffedCubesCount2, FirstIntGenerateChance);
-        int OffCubesCount = Random.Range(MinOffCubesCount, MaxOffCubesCount);
+        if (_difficultCoef >= 1)
+        {
+            ChangeDifficult();
+        }
 
-        _debugInfoSender.SendInfo("postGenerator", "FirstIntGenerateChance: ", FirstIntGenerateChance.ToString());
-        _debugInfoSender.SendInfo("postGenerator", "MinOffCubesCount: ", MinOffCubesCount.ToString());
-        _debugInfoSender.SendInfo("postGenerator", "MaxOffCubesCount: ", MaxOffCubesCount.ToString());
+        _difficultCoef = _generationNumber * AddDifficultCoefForGeneration;
+        int OffCubesCount = _utilits.GetOneOfTwoValues(_minOffedCubesCount, _maxOffedCubesCount, (_difficultCoef * 100));
+
+        _debugInfoSender.SendInfo("postGenerator", "DifficultCoef: ", _difficultCoef.ToString("0.000"));
+
+        List<int> OffedCubesNumberstList = new List<int>();
 
         if (OffCubesCount > 1) //Если больше одного
         {
             List<int> CubesCountList = new List<int>();
-            List<int> OffedCubesNumberstList = new List<int>();
 
             for (int i = 0; i < CubesCount; i++)
             {
                 CubesCountList.Add(i); //Заполнили номерами кубов, доступных для выключения
             }
 
-            for (int i = 0; i < OffCubesCount; i++) //Запустили цикл
+            void offRandomCube()
             {
                 int OffedCubeNumber = Random.Range(0, CubesCountList.Count); //Выбрали случайный куб
 
@@ -74,9 +77,15 @@ public class PostGenerator : MonoBehaviour
                 CubesCountList.Remove(CubesCountList[OffedCubeNumber]); //Убрали из списка доступных
             }
 
-            int probality = Random.Range(0, 100);
+            for (int i = 0; i < OffCubesCount - 1; i++) //Запустили цикл
+            {
+                offRandomCube();
+            }
 
-            if (probality <= _offTwoCubesInARowChance)
+            int offTwoCubesInARowProbality = Random.Range(0, 100);
+            int _offTwoCubesInARowChance = Random.Range(_minOffTwoCubesInARowChance, _maxOffTwoCubesInARowChance);
+
+            if (offTwoCubesInARowProbality <= _offTwoCubesInARowChance)
             {
                 List<int> cubesWhichWeCanOff = new List<int>();
 
@@ -101,95 +110,86 @@ public class PostGenerator : MonoBehaviour
 
                 int randomCubeIndex = Random.Range(0, cubesWhichWeCanOff.Count);
 
-                CubesCountList.Add(cubesWhichWeCanOff[randomCubeIndex]);
+                OffedCubesNumberstList.Add(cubesWhichWeCanOff[randomCubeIndex]);
             }
-
-            CubesCountList.Sort();
-
-            for (int i = 0; i < CubesCount; i++)
+            else
             {
-                if (CubesCountList.Count != 0 && CubesCountList[0] == i)
-                {
-                    CubesCondition.Enqueue(true);
-                    CubesCountList.RemoveAt(0);
-                }
-                else
-                {
-                    CubesCondition.Enqueue(false);
-                }
+                offRandomCube();
             }
+
+            OffedCubesNumberstList.Sort();
+
+            _debugInfoSender.SendInfo("postGenerator", "OffTwoCubesInARowProbality: ", offTwoCubesInARowProbality);
+            _debugInfoSender.SendInfo("postGenerator", "OffTwoCubesInARowChance: ", _offTwoCubesInARowChance);
         }
         else
         {
-            int OffedCubeNumber = Random.Range(1, CubesCount);
-            
-            for (int i = 0; i < CubesCount; i++)
+            int RandomRange = Random.Range(1, CubesCount);
+            OffedCubesNumberstList.Add(RandomRange);
+
+            _debugInfoSender.SendInfo("postGenerator", "OffTwoCubesInARowProbality: ", "null");
+            _debugInfoSender.SendInfo("postGenerator", "OffTwoCubesInARowChance: ", "null");
+        }
+
+        for (int i = 0; i < CubesCount; i++)
+        {
+            if (OffedCubesNumberstList.Contains(i))
             {
-                if (i != OffedCubeNumber)
-                {
-                    CubesCondition.Enqueue(true);
-                }
-                else
-                {
-                    CubesCondition.Enqueue(false);
-                }
+                CubesCondition.Enqueue(false);
+            }
+            else
+            {
+                CubesCondition.Enqueue(true);
             }
         }
 
         _generationNumber++;
-        TryGhangeDifficult();
+
+        _debugInfoSender.SendInfo("postGenerator", "MinOffTwoCubesInARowChance: ", _minOffTwoCubesInARowChance);
+        _debugInfoSender.SendInfo("postGenerator", "MaxOffTwoCubesInARowChance: ", _maxOffTwoCubesInARowChance);
+        _debugInfoSender.SendInfo("postGenerator", "DifficultLevel: ", _difficultLevel.ToString());
+
         return CubesCondition;
     }
 
-    private void TryGhangeDifficult()
+    private void ChangeDifficult()
     {
-        int probality = Random.Range(0, 100);
-        int DifficultChangeChance = Mathf.RoundToInt((ScoreCoef - _scoreCoefWhenDifficultChange) * 100);
+        _difficultLevel++;
+        _generationNumber = 0;
 
-        _debugInfoSender.SendInfo("postGenerator", "ScoreCoef:", ScoreCoef.ToString("0.00"));
-        _debugInfoSender.SendInfo("postGenerator", "DifficultChangeProbality:", probality.ToString());
-        _debugInfoSender.SendInfo("postGenerator", "DifficultChangeChance:", DifficultChangeChance.ToString());
+        _minOffTwoCubesInARowChance = _minOffTwoCubesInARowChance - _subtractMinOffTwoCubesInARowChance;
+        _maxOffTwoCubesInARowChance = _maxOffTwoCubesInARowChance - _subtractMaxOffTwoCubesInARowChance;
 
-        if (probality < DifficultChangeChance)
+        if (_minOffTwoCubesInARowChance < _minOffTwoCubesInARowChance1)
         {
-            _difficultLevel++;
-            _scoreCoefWhenDifficultChange = ScoreCoef + _scoreCoefWhenDifficultChangeIncrement;
-            _generationNumber = 0;
-
-            if (_minOffedCubesCount1 > 1)
-            {
-                _minOffedCubesCount1--;
-            }
-
-            if (_minOffedCubesCount2 > 1)
-            {
-                _minOffedCubesCount2--;
-            }
-
-            if (_maxOffedCubesCount1 > 1)
-            {
-                _maxOffedCubesCount1--;
-            }
-
-            if (_maxOffedCubesCount2 > 1)
-            {
-                _maxOffedCubesCount2--;
-            }
+            _minOffTwoCubesInARowChance = _minOffTwoCubesInARowChance1;
         }
 
-        _debugInfoSender.SendInfo("postGenerator", "DifficultLevel:", _difficultLevel.ToString());
+        if (_maxOffTwoCubesInARowChance < _minOffTwoCubesInARowChance2)
+        {
+            _maxOffTwoCubesInARowChance = _minOffTwoCubesInARowChance2;
+        }
+
+        if (_minOffedCubesCount > _minMinOffedCubesCount)
+        {
+            _minOffedCubesCount--;
+        }
+
+        if (_maxOffedCubesCount > _minMaxOffedCubesCount)
+        {
+            _maxOffedCubesCount--;
+        }
     }
 
     public void reset()
     {
-        _minOffedCubesCount1 = 5;
-        _minOffedCubesCount2 = 3;
-        _maxOffedCubesCount1 = 7; 
-        _maxOffedCubesCount2 = 5;
+        _minOffedCubesCount = 5;
+        _maxOffedCubesCount = 7;
 
         _generationNumber = 0;
         _difficultLevel = 0;
 
-        _offTwoCubesInARowChance = 100;
+        _minOffTwoCubesInARowChance = 100;
+        _maxOffTwoCubesInARowChance = 100;
     }
 }

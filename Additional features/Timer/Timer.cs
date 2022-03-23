@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
-    public float TTime;
-    public bool isPause;
+    public float TimerTime;
+    private bool isPause = true;
 
     public void pause()
     {
@@ -15,16 +15,21 @@ public class Timer : MonoBehaviour
         isPause = false;
     }
 
-    public void SetTimer(float time)
+    public void SetTime(float time)
     {
-        TTime = time;
+        TimerTime = time;
     }
 
     private void FixedUpdate()
     {
         if (!isPause)
         {
-            TTime = TTime - Time.fixedDeltaTime;
+            if (TimerTime <= 0)
+            {
+                isPause = true;
+            }
+
+            TimerTime = TimerTime - Time.fixedDeltaTime;
         }
     }
 }

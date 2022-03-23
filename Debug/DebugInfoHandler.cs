@@ -22,7 +22,7 @@ public class DebugInfoHandler : MonoBehaviour
         handleGroupName = handleGroup;
     }
 
-    public void initializeInfo(string groupName, string infoName)
+    public void registerInfo(string groupName, string infoName)
     {
         if (GetGroupByName(groupName) == null)
         {
@@ -44,7 +44,7 @@ public class DebugInfoHandler : MonoBehaviour
         }
     }
 
-    public void handleInfo(string groupName, string infoName, string infoValue)
+    public void handleInfo(string groupName, string infoName, object infoValue)
     {
         if (handle)
         {
@@ -109,5 +109,5 @@ public class DebugGroup
 public class Info 
 {
     public string Name;
-    public string Value;
+    public object Value;
 }

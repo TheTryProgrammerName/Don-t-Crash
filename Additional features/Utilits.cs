@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 public class Utilits
 {
-    public List<GameObject> GetChildrenList(GameObject Object)
+    public List<GameObject> GetChildrenList(Transform parentTransform)
     {
         try
         {
             List<GameObject> Children = new List<GameObject>();
 
-            foreach (Transform child in Object.gameObject.transform)
+            foreach (Transform child in parentTransform)
             {
                 Children.Add(child.gameObject);
             }
@@ -18,7 +18,7 @@ public class Utilits
         }
         catch
         {
-            if (Object == null)
+            if (parentTransform == null)
             {
                 Debug.LogError("Не присвоено значение Object");
             }
@@ -31,13 +31,13 @@ public class Utilits
         return null;
     }
 
-    public Queue<GameObject> GetChildrenQueue(GameObject Object)
+    public Queue<GameObject> GetChildrenQueue(Transform parentTransform)
     {
         try
         {
             Queue<GameObject> Children = new Queue<GameObject>();
 
-            foreach (Transform child in Object.gameObject.transform)
+            foreach (Transform child in parentTransform)
             {
                 Children.Enqueue(child.gameObject);
             }
@@ -46,7 +46,7 @@ public class Utilits
         }
         catch
         {
-            if (Object == null)
+            if (parentTransform == null)
             {
                 Debug.LogError("Не присвоено значение Object");
             }
@@ -185,6 +185,20 @@ public class Utilits
     public int GetOneOfTwoValues(int value1, int value2, int firstIntGetChance)
     {
         int probality = Random.Range(0, 100);
+
+        if (probality < firstIntGetChance)
+        {
+            return value1;
+        }
+        else
+        {
+            return value2;
+        }
+    }
+
+    public int GetOneOfTwoValues(int value1, int value2, float firstIntGetChance)
+    {
+        float probality = Random.Range(0f, 100f);
 
         if (probality < firstIntGetChance)
         {

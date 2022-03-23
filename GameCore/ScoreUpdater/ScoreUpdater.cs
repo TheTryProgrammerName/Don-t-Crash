@@ -1,24 +1,14 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class ScoreUpdater : MonoBehaviour
 {
     [SerializeField] private ScoreTextDraver _scoreTextDraver;
     [SerializeField] private MenuScoreUpdater _menuScoreUpdater;
-    [SerializeField] private UnityEvent<float> _sendScoreCoef;
+    [SerializeField] private UIController _UIcontroller;
 
     private SaveData _saveData = new SaveData();
 
     private int _score = 0;
-
-    public float ScoreCoef;
-    public float MinScoreCoef = 1.0f, AddScoreCoefForRecord = 0.05f;
-
-    public void Initialize()
-    {
-        ScoreCoef = MinScoreCoef;
-        sendScore();
-    }
 
     public void start()
     {
@@ -28,32 +18,13 @@ public class ScoreUpdater : MonoBehaviour
     public void AddScore()
     {
         _score++;
-        CalculateRecordCoef();
 
         UpdateScore();
     }
 
     private void UpdateScore()
     {
-        sendScore();
         _scoreTextDraver.DrawScoreText(_score);
-    }
-
-    private void CalculateRecordCoef()
-    {
-        if (ScoreCoef < MinScoreCoef)
-        {
-            ScoreCoef = MinScoreCoef;
-        }
-        else
-        {
-            ScoreCoef = MinScoreCoef + _score * AddScoreCoefForRecord;
-        }
-    }
-
-    public void sendScore()
-    {
-        _sendScoreCoef.Invoke(ScoreCoef);
     }
 
     public void SaveScore()
@@ -64,6 +35,7 @@ public class ScoreUpdater : MonoBehaviour
         {
             _saveData.SaveInt("Record", _score);
             _menuScoreUpdater.UpdateRecord(_score);
+            _UIcontroller.SetPreset("NewRecord");
         }
     }
 
@@ -74,6 +46,5 @@ public class ScoreUpdater : MonoBehaviour
         _scoreTextDraver.reset();
 
         _score = 0;
-        ScoreCoef = MinScoreCoef;
     }
 }

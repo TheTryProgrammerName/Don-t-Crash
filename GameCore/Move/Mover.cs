@@ -12,6 +12,9 @@ public class Mover : MonoBehaviour
 
     [SerializeField] private Rigidbody2D _characterRigidbody;
 
+    private DebugInfoSender _debugInfoSender;
+    private Timer _timer;
+
     private bool _isPause;
     private bool _isFastFly;
 
@@ -22,11 +25,29 @@ public class Mover : MonoBehaviour
 
     public void Initialize()
     {
+        _debugInfoSender = new DebugInfoSender();
+        InitializeDebug();
+
+        _timer = _timerController.CreateTimer();
+
         _speedChanger.Initialize();
+    }
+
+    private void InitializeDebug()
+    {
+        _debugInfoSender.RegisterInfo("Mover", "FastFlyTime: ");
     }
 
     public void reset()
     {
+        if (_isFastFly)
+        {
+            Normolaze();
+            StopAllCoroutines();
+            _timer.TimerTime = 0;
+            _debugInfoSender.SendInfo("Mover", "FastFlyTime: ", _timer.TimerTime);
+        }
+
         _speedChanger.reset();
         _characterMover.reset();
         _graphicsMover.reset();
@@ -37,12 +58,14 @@ public class Mover : MonoBehaviour
         _isPause = true;
         _characterMover.pause();
         _graphicsMover.pause();
+        _timer.pause();
     }
 
     public void unPause()
     {
         _isPause = false;
         _characterMover.unPause();
+        _timer.play();
     }
 
     private void FixedUpdate()
@@ -56,6 +79,17 @@ public class Mover : MonoBehaviour
         }
     }
 
+    private void BoostSpeed()
+    {
+        _timeScaleBeforeBoost = Time.timeScale;
+        Time.timeScale = Time.timeScale * _timeSpeedBoost;
+    }
+
+    private void ResetBoostSpeed()
+    {
+        Time.timeScale = _timeScaleBeforeBoost + Time.timeScale - _timeScaleBeforeBoost * _timeSpeedBoost;
+    }
+
     public void FastFly()
     {
         if (!_isFastFly)
@@ -64,11 +98,11 @@ public class Mover : MonoBehaviour
             _characterResizer.resizeMin();
 
             _speedChanger.MaxSpeed = _speedChanger.MaxSpeed * _timeSpeedBoost;
-            _timeScaleBeforeBoost = Time.timeScale;
-            Time.timeScale = Time.timeScale * _timeSpeedBoost;
+            BoostSpeed();
 
-            Timer TimerToNormolaze = _timerController.SetTimer(_timeToNormolize);
-            StartCoroutine(CheckTimerTime(TimerToNormolaze));
+            _timer.SetTime(_timeToNormolize);
+            _timer.play();
+            StartCoroutine(CheckTimerTime());
             _isFastFly = true;
         }
     }
@@ -78,25 +112,21 @@ public class Mover : MonoBehaviour
         _characterResizer.resizeMax();
         _characterRigidbody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 
-        Time.timeScale = _timeScaleBeforeBoost + Time.timeScale - _timeScaleBeforeBoost * _timeSpeedBoost;
-
+        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed / _timeSpeedBoost;
         _isFastFly = false;
     }
 
-    private IEnumerator CheckTimerTime(Timer timer)
+    private IEnumerator CheckTimerTime()
     {
-        while (characterIsAlive && timer.TTime > 0)
+        while (characterIsAlive && _timer.TimerTime > 0)
         {
             yield return new WaitForFixedUpdate();
 
-            if (_isPause)
-            {
-                timer.TTime += Time.fixedDeltaTime;
-            }
+            _debugInfoSender.SendInfo("Mover", "FastFlyTime: ", _timer.TimerTime);
         }
 
-        Destroy(timer.gameObject);
         Normolaze();
+        ResetBoostSpeed();
 
         yield break;
     }

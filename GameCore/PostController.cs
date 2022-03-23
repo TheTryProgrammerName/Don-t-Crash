@@ -29,12 +29,13 @@ public class PostController : MonoBehaviour
         for (int i = 0; i < _posts.Length; i++)
         {
             _posts[i].SetActive(false);
+            _posts[i].GetComponent<ObjectsGroup>().Enable();
         }
     }
 
     public void GeneratePost(GameObject Post)
     {
-        Queue<GameObject> PostCubes = _utilits.GetChildrenQueue(Post);
+        Queue<GameObject> PostCubes = _utilits.GetChildrenQueue(Post.transform);
         Queue<bool> CubesCondition = _postGenerator.GenerateCubesCondition(PostCubes.Count);
 
         UpdatePost(PostCubes, CubesCondition);

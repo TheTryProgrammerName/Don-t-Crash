@@ -7,7 +7,7 @@ public class PositionTracker : MonoBehaviour
     [SerializeField] private ScoreUpdater _scoreUpdater;
     [SerializeField] private PostController _postController;
 
-    private int _recordPoint = -6, _startLineOffPoint = -15;
+    private int _character—ollisionWithPostPoint = -3, _recordPoint = -6, _startLineOffPoint = -15;
     private float _postBehindTheScreenPoint = 13.3f;
     private float _postTeleportationPointFrom = -38f;
     private float _postSpasing = 27f;
@@ -31,6 +31,7 @@ public class PositionTracker : MonoBehaviour
     private IEnumerator PostTrack(GameObject Post)
     {
         Transform PostTransform = Post.transform;
+        ObjectsGroup GroundShadowOverlapGroup = Post.GetComponent<ObjectsGroup>();
 
         while (CharacterIsAlive)
         {
@@ -40,6 +41,13 @@ public class PositionTracker : MonoBehaviour
             }
 
             _postController.GeneratePost(Post);
+
+            while (PostTransform.position.x >= _character—ollisionWithPostPoint)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+
+            GroundShadowOverlapGroup.Disable();
 
             while (PostTransform.position.x >= _recordPoint)
             {
@@ -56,6 +64,8 @@ public class PositionTracker : MonoBehaviour
             GameObject nextPost = getNextPost();
             float teleportTo = nextPost.transform.position.x + _postSpasing;
             PostTransform.position = new Vector2(teleportTo, PostTransform.position.y);
+
+            GroundShadowOverlapGroup.Enable();
 
             StartCoroutine(PostTrack(Post));
 

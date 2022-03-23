@@ -23,8 +23,6 @@ public class DebugUIController : MonoBehaviour
         }
 
         _lastGroupNuimber = _debugInfoGroups.Count - 1;
-
-        SwitchHandleGroup(0);
     }
 
     public void SwitchHandleGroup(int number)
