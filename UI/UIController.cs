@@ -5,85 +5,88 @@ public class UIController : MonoBehaviour
 {
     [SerializeField] private Preset[] _presets;
 
-    private Queue<string> _backingPresets = new Queue<string>();
-    private Queue<string> _invertBackingPresets = new Queue<string>();
+    private Dictionary<Preset, bool> _savedPresets;
 
-    private GameObject[] _activateObjects;
-    private GameObject[] _deactivateObjects;
-
-    public void SetPreset(string PresetName)
+    public void Initialize()
     {
-        GetPresetObjects(PresetName);
-
-        for (int i = 0; i < _activateObjects.Length; i++)
-        {
-            _activateObjects[i].SetActive(true);
-        }
-
-        for (int i = 0; i < _deactivateObjects.Length; i++)
-        {
-            _deactivateObjects[i].SetActive(false);
-        }
+        _savedPresets = new Dictionary<Preset, bool>();
     }
 
-    public void SetInvertPreset(string PresetName) //Выключаемые объекты вклчюаем, а включаемые выключаем
+    public void SetPreset(string presetName)
     {
-        GetPresetObjects(PresetName);
+        Preset preset = getPresetByName(presetName);
 
-        for (int i = 0; i < _activateObjects.Length; i++)
-        {
-            _activateObjects[i].SetActive(false);
-        }
-
-        for (int i = 0; i < _deactivateObjects.Length; i++)
-        {
-            _deactivateObjects[i].SetActive(true);
-        }
+        preset.Set(true);
     }
 
-    public void SaveBackingPreset(string PresetName) //Сохраняем пресет, к которому будем возвращаться
+    public void SetInvertPreset(string presetName)
     {
-        _backingPresets.Enqueue(PresetName);
+        Preset preset = getPresetByName(presetName);
+
+        preset.Set(false);
     }
 
-    public void SaveInvertBackingPreset(string PresetName) //Сохраняем инвертированный пресет, к которому будем возвращаться
+    public void SavePreset(string presetName) //Сохраняем пресет, к которому будем возвращаться
     {
-        _invertBackingPresets.Enqueue(PresetName);
+        Preset savedPreset = getPresetByName(presetName);
+
+        _savedPresets.Add(savedPreset, true);
     }
 
-    public void SetBackingPreset() //Устанавливаем пресеты, к которым хотели вернуться
+    public void SaveInvertPreset(string presetName) //Сохраняем инвертированный пресет, к которому будем возвращаться
     {
-        for (int i = 0; i < _backingPresets.Count;)
-        {
-            SetPreset(_backingPresets.Dequeue());
-        }
-        for (int i = 0; i < _invertBackingPresets.Count;)
-        {
-            SetInvertPreset(_invertBackingPresets.Dequeue());
-        }
+        Preset savedPreset = getPresetByName(presetName);
+
+        _savedPresets.Add(savedPreset, false);
     }
 
-    private void GetPresetObjects(string PresetName)
+    private Preset getPresetByName(string presetName)
     {
-        for (int PresetNumber = 0; PresetNumber < _presets.Length; PresetNumber++)
+        foreach (Preset preset in _presets)
         {
-            if (_presets[PresetNumber].PresetName == PresetName)
+            if (preset.Name == presetName)
             {
-                Preset Preset = _presets[PresetNumber];
-                _activateObjects = Preset.ActivateObjects;
-                _deactivateObjects = Preset.DeactivateObjects;
-
-                return;
+                return preset;
             }
         }
+
+        Debug.LogErrorFormat("Пресет не найден: {0}", presetName);
+
+        return new Preset();
+    }
+
+    public void SetSavedPresets() //Устанавливаем пресеты, к которым хотели вернуться
+    {
+        foreach (KeyValuePair<Preset, bool> keyValuePair in _savedPresets)
+        {
+            Preset savedPreset = keyValuePair.Key;
+            bool presetCondition = keyValuePair.Value;
+
+            savedPreset.Set(presetCondition);
+        }
+
+        _savedPresets.Clear();
     }
 }
 
 [System.Serializable]
-public class Preset
+public struct Preset
 {
-    public string PresetName;
+    public string Name;
 
     public GameObject[] ActivateObjects;
     public GameObject[] DeactivateObjects;
+
+    public void Set(bool enable)
+    {
+        foreach (GameObject enabledObject in ActivateObjects)
+        {
+            enabledObject.SetActive(enable);
+        }
+
+        foreach (GameObject disabledObject in DeactivateObjects)
+        {
+            disabledObject.SetActive(!enable);
+        }
+    }
 }

@@ -2,34 +2,35 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
-    public float TimerTime;
-    private bool isPause = true;
+    public float time;
+
+    private bool _isPause = true;
 
     public void pause()
     {
-        isPause = true;
+        _isPause = true;
     }
 
     public void play()
     {
-        isPause = false;
+        _isPause = false;
     }
 
     public void SetTime(float time)
     {
-        TimerTime = time;
+        this.time = time;
     }
 
     private void FixedUpdate()
     {
-        if (!isPause)
+        if (!_isPause)
         {
-            if (TimerTime <= 0)
-            {
-                isPause = true;
-            }
+            time = time - Time.fixedDeltaTime;
 
-            TimerTime = TimerTime - Time.fixedDeltaTime;
+            if (time <= 0)
+            {
+                _isPause = true;
+            }
         }
     }
 }

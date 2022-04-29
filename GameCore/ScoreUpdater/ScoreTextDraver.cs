@@ -6,14 +6,14 @@ using UnityEngine.UI;
 public class ScoreTextDraver : Instantiator
 {
     [SerializeField] private Sprite[] _numbersSprites; //Список спрайтов для отрисоввки 
-    [SerializeField] private Vector2[] _numbersSizes; //Содержит размер каждого числа
-    [SerializeField] private List<Vector2> _defaultNumberSizes;
+    [SerializeField] private Vector2[] _numbersSizes; //Текущий размер каждого числа
+    [SerializeField] private Vector2[] _defaultNumberSizes; //Стандартный размер каждого числа
 
-    private List<SVGImage> _numbersImages;
-    private List<RectTransform> _numbersRectTransforms;
-    private List<int> _splitedScore;
+    private List<SVGImage> _numbersImages; //Спрайты находящиеся на сцене
+    private List<RectTransform> _numbersRectTransforms; //Их трансформы
+    private List<int> _splitedScore; //Создаём лист заранее и перезаполняем его, вместо того чтобы каждый раз создавать новый
 
-    private int _maxContentContainerSize = 1824; //Если контейнер цифр становится больше этого значения - уменьшаем размер цифр
+    private const int _maxContentContainerSize = 1824; //Если контейнер цифр становится больше этого значения - уменьшаем размер цифр
 
     private float _defaultContainerSpacing;
 
@@ -27,9 +27,11 @@ public class ScoreTextDraver : Instantiator
         _numbersRectTransforms = new List<RectTransform>();
         _splitedScore = new List<int>();
 
+        _defaultNumberSizes = new Vector2[_numbersSizes.Length];
+
         for (int i = 0; i < _numbersSizes.Length; i++)
         {
-            _defaultNumberSizes.Add(_numbersSizes[i]);
+            _defaultNumberSizes[i] = _numbersSizes[i];
         }
 
         _defaultContainerSpacing = _container.gameObject.GetComponent<HorizontalLayoutGroup>().spacing;
@@ -38,6 +40,7 @@ public class ScoreTextDraver : Instantiator
     public void DrawScoreText(int Score)
     {
         int ScoreLenght = Score.ToString().Length;
+        _utilits.intSplit(Score, _splitedScore);
 
         if (ScoreLenght > _instantiateObjects.Count) //Если нужно нарисовать больше символов, чем у нас спрайтов на сцене
         {
@@ -45,8 +48,6 @@ public class ScoreTextDraver : Instantiator
             _numbersImages.Add(_instantiateObjects[ScoreLenght - 1].GetComponent<SVGImage>());
             _numbersRectTransforms.Add(_instantiateObjects[ScoreLenght - 1].GetComponent<RectTransform>());
         }
-
-        _utilits.intSplit(Score, _splitedScore);
 
         for (int i = 0; i < ScoreLenght; i++)
         {
@@ -68,9 +69,9 @@ public class ScoreTextDraver : Instantiator
         HorizontalLayoutGroup containerLayoutGroup = _container.gameObject.GetComponent<HorizontalLayoutGroup>();
         float contentSpacing = containerLayoutGroup.spacing; //Размер отсупов
 
-        for (int i = 0; i < _numbersRectTransforms.Count; i++)
+        foreach (RectTransform numberRectTransform in _numbersRectTransforms)
         {
-            trueContainerWidth += _numbersRectTransforms[i].sizeDelta.x;
+            trueContainerWidth += numberRectTransform.sizeDelta.x;
             trueContainerWidth += contentSpacing;
         }
 
@@ -101,7 +102,7 @@ public class ScoreTextDraver : Instantiator
     {
         int instantiateObjectsCount = _instantiateObjects.Count;
 
-        for (int i = 0; i < instantiateObjectsCount - 1; i++) //Удаляем все лишние объекты
+        for (int i = 0; i < instantiateObjectsCount - 1; i++) //Удаляем все объекты кроме последнего
         {
             DestroyObject();
             _numbersImages.RemoveAt(0);

@@ -4,12 +4,8 @@ using UnityEngine.EventSystems;
 
 public abstract class SwipeManager : MonoBehaviour, IBeginDragHandler, IDragHandler
 {
-    public bool lockControl;
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!lockControl)
-        {
             if (Math.Abs(eventData.delta.y) > Math.Abs(eventData.delta.x))
             {
                 if (eventData.delta.y > 0)
@@ -32,25 +28,24 @@ public abstract class SwipeManager : MonoBehaviour, IBeginDragHandler, IDragHand
                     SwipeLeft();
                 }
             }
-        }
     }
 
-    public virtual void SwipeUp()
+    protected virtual void SwipeUp()
     {
 
     }
 
-    public virtual void SwipeDown()
+    protected virtual void SwipeDown()
     {
 
     }
 
-    public virtual void SwipeRight()
+    protected virtual void SwipeRight()
     {
 
     }
 
-    public virtual void SwipeLeft()
+    protected virtual void SwipeLeft()
     {
 
     }

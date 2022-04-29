@@ -5,8 +5,8 @@ public class TextSwitcher : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _text;
 
-    public void Switch(string NewText)
+    public void Switch(string text)
     {
-        _text.text = NewText;
+        _text.text = text;
     }
 }

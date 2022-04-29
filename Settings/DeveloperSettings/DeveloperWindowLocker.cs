@@ -4,16 +4,17 @@ public class DeveloperWindowLocker : MonoBehaviour
 {
     [SerializeField] private GameObject _openButton;
 
-    private int _rightTop, _rightBottom, _leftBottom;
-    private int _needRightTop = 3, _needRightBottom = 4, _needLeftBottom = 5;
+    private const int _needRightTop = 3, _needRightBottom = 4, _needLeftBottom = 5;
 
-    public void OnClick(string ButtonName)
+    private int _rightTop, _rightBottom, _leftBottom;
+
+    public void OnClick(string buttonName)
     {
-        if (ButtonName == "RightTop")
+        if (buttonName == "RightTop")
         {
             _rightTop++;
         }
-        else if (ButtonName == "RightBottom")
+        else if (buttonName == "RightBottom")
         {
             _rightBottom++;
         }
@@ -33,7 +34,7 @@ public class DeveloperWindowLocker : MonoBehaviour
         }
     }
 
-    public void ResetLockValues()
+    public void reset()
     {
         _rightTop = 0;
         _rightBottom = 0;

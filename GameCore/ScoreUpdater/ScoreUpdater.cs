@@ -10,19 +10,25 @@ public class ScoreUpdater : MonoBehaviour
 
     private int _score = 0;
 
+    public void Initialize()
+    {
+        _scoreTextDraver.Initialize();
+        _menuScoreUpdater.Initialize();
+    }
+
     public void start()
     {
-        UpdateScore();
+        DrawScore();
     }
 
     public void AddScore()
     {
         _score++;
 
-        UpdateScore();
+        DrawScore();
     }
 
-    private void UpdateScore()
+    private void DrawScore()
     {
         _scoreTextDraver.DrawScoreText(_score);
     }

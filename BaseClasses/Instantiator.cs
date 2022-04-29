@@ -4,17 +4,18 @@ using UnityEngine;
 public abstract class Instantiator : MonoBehaviour
 {
     [SerializeField] private GameObject _prefab;
-    public RectTransform _container;
 
-    public List<GameObject> _instantiateObjects;
+    [SerializeField] protected RectTransform _container;
 
-    public void CreateObject()
+    protected List<GameObject> _instantiateObjects;
+
+    protected void CreateObject()
     {
         GameObject instantiateText = Instantiate(_prefab, _container);
         _instantiateObjects.Add(instantiateText);
     }
 
-    public void DestroyObject()
+    protected void DestroyObject()
     {
         Destroy(_instantiateObjects[0]);
         _instantiateObjects.RemoveAt(0);

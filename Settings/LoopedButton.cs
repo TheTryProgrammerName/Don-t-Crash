@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class LoopedButton : Button
 {
-    private bool isPressed;
+    private bool _isPressed;
 
     public override void OnPointerEnter(PointerEventData eventData)
     {
-        isPressed = true;
+        _isPressed = true;
         StartCoroutine(LoopOnClick());
     }
 
     public override void OnPointerExit(PointerEventData eventData)
     {
-        isPressed = false;
+        _isPressed = false;
         StopAllCoroutines();
     }
 
@@ -23,7 +23,7 @@ public class LoopedButton : Button
     {
         float timeToWait = 0.4f;
 
-        while (isPressed)
+        while (_isPressed)
         {
             yield return new WaitForSecondsRealtime(timeToWait);
 

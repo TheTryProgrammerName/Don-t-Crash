@@ -4,22 +4,22 @@ public class SkinsController : SwipeManager
 {
     [SerializeField] private SkinsChanger _skinsChanger;
 
-    public override void SwipeUp()
+    protected override void SwipeUp()
     {
         _skinsChanger.NextColor();
     }
 
-    public override void SwipeDown()
+    protected override void SwipeDown()
     {
         _skinsChanger.LastColor();
     }
 
-    public override void SwipeRight()
+    protected override void SwipeRight()
     {
         _skinsChanger.NextSkin();
     }
 
-    public override void SwipeLeft()
+    protected override void SwipeLeft()
     {
         _skinsChanger.LastSkin();
     }

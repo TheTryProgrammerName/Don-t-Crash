@@ -9,7 +9,7 @@ public class SpeedChanger : MonoBehaviour
     public float MinSpeed = 1.0f;
 
     public float SpeedForFrame = 0.0001f; //Прибавление скорости за кадр
-    public float SpeedChangeFactor = 0.4f;
+    public float SpeedChangeFactor = 0.4f; //Модификатор на который умножается SpeedForFrame
 
     public void Initialize()
     {
@@ -21,16 +21,14 @@ public class SpeedChanger : MonoBehaviour
 
     private void InitializeDebug()
     {
-        _debugInfoSender.RegisterInfo("SpeedChanger", "CurrentSpeed: ");
-        _debugInfoSender.RegisterInfo("SpeedChanger", "SpeedForFrame: ");
-        _debugInfoSender.RegisterInfo("SpeedChanger", "SpeedChangeFactor: ");
+        _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed", 0);
+        _debugInfoSender.SendInfo("SpeedChanger", "SpeedForFrame", 0);
+        _debugInfoSender.SendInfo("SpeedChanger", "SpeedChangeFactor", 0);
     }
 
     public void reset()
     {
         Time.timeScale = MinSpeed;
-
-        StopAllCoroutines();
     }
 
     public void ChangeSpeed()
@@ -38,9 +36,9 @@ public class SpeedChanger : MonoBehaviour
         if (Time.timeScale <= MaxSpeed && Time.timeScale >= MinSpeed)
         {
             Time.timeScale += SpeedForFrame * SpeedChangeFactor;
-            _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed: ", Time.timeScale.ToString("0.0000"));
-            _debugInfoSender.SendInfo("SpeedChanger", "SpeedForFrame: ", SpeedForFrame.ToString("0.0000"));
-            _debugInfoSender.SendInfo("SpeedChanger", "SpeedChangeFactor: ", SpeedChangeFactor.ToString("0.0"));
+            _debugInfoSender.SendInfo("SpeedChanger", "CurrentSpeed", Time.timeScale.ToString("0.0000"));
+            _debugInfoSender.SendInfo("SpeedChanger", "SpeedForFrame", SpeedForFrame.ToString("0.0000"));
+            _debugInfoSender.SendInfo("SpeedChanger", "SpeedChangeFactor", SpeedChangeFactor.ToString("0.0"));
         }
     }
 }

@@ -1,21 +1,16 @@
 using UnityEngine;
 
-public class DebugInfoSender : MonoBehaviour
+public class DebugInfoSender
 {
-    private DebugInfoHandler debugInfoHandler;
+    private DebugInfoHandler _debugInfoHandler;
 
     public DebugInfoSender()
     {
-        debugInfoHandler = FindObjectOfType<DebugInfoHandler>();
-    }
-
-    public void RegisterInfo(string groupName, string infoName)
-    {
-        debugInfoHandler.registerInfo(groupName, infoName);
+        _debugInfoHandler = MonoBehaviour.FindObjectOfType<DebugInfoHandler>();
     }
 
     public void SendInfo(string groupName, string infoName, object infoValue)
     {
-        debugInfoHandler.handleInfo(groupName, infoName, infoValue);
+        _debugInfoHandler.handleInfo(groupName, infoName, infoValue);
     }
 }

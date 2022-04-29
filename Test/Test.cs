@@ -5,7 +5,7 @@ using TMPro;
 
 public class Test : MonoBehaviour
 {
-    public CharacterControl CharacterControl;
+    /*public CharacterControl CharacterControl;
 
     public Rigidbody2D rbd;
 
@@ -58,5 +58,5 @@ public class Test : MonoBehaviour
         tgrf.text = "postRB2: " + postRB2.position.x.ToString();
         tgrf2.text = "postRB1: " + postRB1.position.x.ToString();
         tgrf3.text = "postRB2 - postRB1 :" + (postRB2.position.x - postRB1.position.x).ToString();
-    }
+    }*/
 }

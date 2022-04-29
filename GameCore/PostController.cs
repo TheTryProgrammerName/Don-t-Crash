@@ -3,56 +3,60 @@ using UnityEngine;
 
 public class PostController : MonoBehaviour
 {
-    [SerializeField] private PostGenerator _postGenerator;
+    [SerializeField] private ObjectsPool _postsPool;
+
+    private PostGenerator _postGenerator;
     private LevelLoader _levelLoader;
 
-    [SerializeField] private GameObject[] _posts;
+    private float _addDifficultCoefForGeneration = 0.025f;
 
-    private Utilits _utilits;
+    public float AddDifficultCoefForGeneration 
+    {
+        get 
+        { 
+            return _addDifficultCoefForGeneration; 
+        }
+        set 
+        { 
+            _addDifficultCoefForGeneration = value;
+            _postGenerator.AddDifficultCoefForGeneration = value;
+        } 
+    }
 
     public void Initialize()
     {
+        _postGenerator = new PostGenerator(AddDifficultCoefForGeneration);
         _levelLoader = new LevelLoader();
-        _utilits = new Utilits();
     }
 
     public void start()
     {
-        for (int i = 0; i < _posts.Length; i++)
-        {
-            _posts[i].SetActive(true);
-        }
+        _postsPool.Enable();
     }
 
     public void reset()
     {
-        for (int i = 0; i < _posts.Length; i++)
-        {
-            _posts[i].SetActive(false);
-            _posts[i].GetComponent<ObjectsGroup>().Enable();
-        }
+        _postsPool.Disable();
+
+        _postGenerator.reset();
     }
 
-    public void GeneratePost(GameObject Post)
+    public void GeneratePost(GameObject[] postCubes)
     {
-        Queue<GameObject> PostCubes = _utilits.GetChildrenQueue(Post.transform);
-        Queue<bool> CubesCondition = _postGenerator.GenerateCubesCondition(PostCubes.Count);
+        int PostCubesCount = postCubes.Length;
 
-        UpdatePost(PostCubes, CubesCondition);
+        Queue<bool> CubesCondition = _postGenerator.GenerateCubesCondition(PostCubesCount);
+
+        for (int i = 0; i < PostCubesCount; i++)
+        {
+            GameObject postCube = postCubes[i];
+            bool cubeCondition = CubesCondition.Dequeue();
+            postCube.SetActive(cubeCondition);
+        }
     }
 
     public void LoadLevel()
     {
 
-    }
-
-    private void UpdatePost(Queue<GameObject> PostCubes, Queue<bool> CubesCondition)
-    {
-        int PostCubesCount = PostCubes.Count;
-
-        for (int i = 0; i < PostCubesCount; i++)
-        {
-            PostCubes.Dequeue().SetActive(CubesCondition.Dequeue());
-        }
     }
 }

@@ -5,7 +5,8 @@ public class MenuScoreUpdater : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _recordText;
 
-    private int _textMaxWidth = 500;
+    private const int _textMaxWidth = 500;
+
     private SaveData _saveData;
 
     public void Initialize()

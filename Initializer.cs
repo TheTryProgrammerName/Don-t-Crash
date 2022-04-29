@@ -2,41 +2,35 @@ using UnityEngine;
 
 public class Initializer : MonoBehaviour
 {
-    [SerializeField] private DebugInfoHandler _debugInfoHandler;
-    [SerializeField] private Mover _mover;
-    [SerializeField] private ScoreTextDraver _scoreTextDraver;
-    [SerializeField] private MenuScoreUpdater _menuScoreUpdater;
-    [SerializeField] private PostController _postController;
-    [SerializeField] private PostGenerator _postGenerator;
+    [SerializeField] private DebugGroupSwitcher _debugGroupSwitcher;
+    [SerializeField] private GameConditions _gameConditions;
     [SerializeField] private DeveloperSettings _developerSettings;
-    [SerializeField] private DebugInfoDrawer _debugInfoDrawer;
-    [SerializeField] private DebugUIController _debugUIController;
-    [SerializeField] private CharacterResizer _characterResizer;
+    [SerializeField] private UIController _uiController;
 
+    private ObjectsPool[] _objectsPools;
     private UIFadeout[] _UIFadeouts;
 
     private void Awake()
     {
         _UIFadeouts = FindObjectsOfType<UIFadeout>();
+        _objectsPools = FindObjectsOfType<ObjectsPool>();
 
-        _debugInfoHandler.Initialize();
-        _mover.Initialize();
-        _menuScoreUpdater.Initialize();
-        _scoreTextDraver.Initialize();
-        _postController.Initialize();
-        _postGenerator.Initialize();
-        _developerSettings.Initizlize();
-        _debugInfoDrawer.Initialize();
-        _debugUIController.Initialize();
-
-        int UIFadeoutsLenght = _UIFadeouts.Length;
-
-      //  for (int i = 0; i < UIFadeoutsLenght; i++)
+        foreach (ObjectsPool objectsPool in _objectsPools)
         {
-            _UIFadeouts[0].Initialize();
+            objectsPool.Initialize();
         }
 
-        _characterResizer.Initialize();
+        _debugGroupSwitcher.Initialize();
+        _gameConditions.Initialize();
+        _developerSettings.Initizlize();
+        _uiController.Initialize();
+
+        /*int UIFadeoutsLenght = _UIFadeouts.Length;
+
+        for (int i = 0; i < UIFadeoutsLenght; i++)
+        {
+            _UIFadeouts[0].Initialize();
+        }*/
 
         Destroy(this);
     }

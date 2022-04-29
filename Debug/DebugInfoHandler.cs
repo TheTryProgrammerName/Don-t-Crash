@@ -1,113 +1,37 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class DebugInfoHandler : MonoBehaviour
 {
     [SerializeField] private DebugInfoDrawer _debugInfoDrawer;
-    [SerializeField] private DebugUIController _debugUIController;
+    [SerializeField] private DebugGroupsBuffer _debugGroupsBuffer;
 
-    public List<DebugGroup> debugGroups;
+    private DebugGroup _handleGroup;
 
-    public bool handle = false;
-    private string handleGroupName;
-    private DebugGroup handleGroup;
+    public bool handle;
 
     public void Initialize()
     {
-        debugGroups = new List<DebugGroup>();
+        _debugInfoDrawer.Initialize();
     }
 
-    public void switchHandleGroup(string handleGroup)
+    public void switchHandleGroup(DebugGroup group)
     {
-        handleGroupName = handleGroup;
+        _handleGroup = group;
+        _debugInfoDrawer.DrawInfo(_handleGroup.Info);
     }
 
-    public void registerInfo(string groupName, string infoName)
+    public void handleInfo(string groupName, string name, object value)
     {
-        if (GetGroupByName(groupName) == null)
+        if (!_debugGroupsBuffer.HasGroup(groupName))
         {
-            DebugGroup debugGroup = new DebugGroup();
-            debugGroup.Name = groupName;
-
-            debugGroups.Add(debugGroup);
+            _debugGroupsBuffer.RegisterGroup(groupName);
         }
 
-        DebugGroup initializedGroup = GetGroupByName(groupName);
+        _debugGroupsBuffer.DebugGroups[groupName].UpdateInfo(name, value);
 
-        if (initializedGroup.GetInfoByName(infoName) == null)
+        if (handle && _handleGroup.HasInfo(name))
         {
-            Info info = new Info();
-            info.Name = infoName;
-            info.Value = "";
-
-            initializedGroup.Info.Add(info);
+            _debugInfoDrawer.DrawInfo(_handleGroup.Info);
         }
     }
-
-    public void handleInfo(string groupName, string infoName, object infoValue)
-    {
-        if (handle)
-        {
-            if (handleGroup == null || handleGroup.Name != groupName)
-            {
-                handleGroup = GetGroupByName(groupName);
-            }
-            
-            Info info = handleGroup.GetInfoByName(infoName);
-
-            info.Value = infoValue;
-
-            if (groupName == handleGroupName) //Если на обработку пришла та группа, за которой мы следим - отрисовываем её значения
-            {
-                _debugInfoDrawer.DrawInfo(handleGroup);
-            }
-        }
-    }
-
-    private DebugGroup GetGroupByName(string name)
-    {
-        int GroupsCount = debugGroups.Count;
-
-        for (int i = 0; i < GroupsCount; i++)
-        {
-            if (debugGroups[i].Name == name)
-            {
-                return debugGroups[i];
-            }
-        }
-
-        return null;
-    }
-}
-
-public class DebugGroup
-{
-    public string Name;
-    public List<Info> Info;
-
-    public DebugGroup()
-    {
-        Info = new List<Info>();
-    }
-
-    public Info GetInfoByName(string name)
-    {
-        int InfoCount = Info.Count;
-
-        for (int i = 0; i < InfoCount; i++)
-        {
-            if (Info[i].Name == name)
-            {
-                return Info[i];
-            }
-        }
-
-        return null;
-    }
-}
-
-public class Info 
-{
-    public string Name;
-    public object Value;
 }

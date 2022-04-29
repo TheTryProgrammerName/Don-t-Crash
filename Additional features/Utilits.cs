@@ -7,14 +7,14 @@ public class Utilits
     {
         try
         {
-            List<GameObject> Children = new List<GameObject>();
+            List<GameObject> children = new List<GameObject>();
 
             foreach (Transform child in parentTransform)
             {
-                Children.Add(child.gameObject);
+                children.Add(child.gameObject);
             }
 
-            return Children;
+            return children;
         }
         catch
         {
@@ -35,14 +35,14 @@ public class Utilits
     {
         try
         {
-            Queue<GameObject> Children = new Queue<GameObject>();
+            Queue<GameObject> children = new Queue<GameObject>();
 
             foreach (Transform child in parentTransform)
             {
-                Children.Enqueue(child.gameObject);
+                children.Enqueue(child.gameObject);
             }
 
-            return Children;
+            return children;
         }
         catch
         {
@@ -59,26 +59,26 @@ public class Utilits
         return null;
     }
 
-    public GameObject GetChildByName(List<GameObject> Objects, string Name)
+    public GameObject GetChildByName(List<GameObject> objects, string name)
     {
         try
         {
-            for (int i = 0; i < Objects.Count; i++)
+            foreach (GameObject childObject in objects)
             {
-                if (Objects[i].name == Name)
+                if (childObject.name == name)
                 {
-                    return Objects[i];
+                    return childObject;
                 }
             }
 
         }
         catch
         {
-            if (Objects == null)
+            if (objects == null)
             {
                 Debug.LogError("Не присвоено значение Objects");
             }
-            else if (Name == null)
+            else if (name == null)
             {
                 Debug.LogError("Не присвоено значение Name");
             }
@@ -91,50 +91,50 @@ public class Utilits
         return null;
     }
 
-    public int LoopIntValue(int Value, int Min, int Max)
+    public int LoopIntValue(int value, int min, int max)
     {
-        if (Value < Min)
+        if (value < min)
         {
-            Value = Max;
+            value = max;
         }
-        else if (Value > Max)
+        else if (value > max)
         {
-            Value = Min;
+            value = min;
         }
 
-        return Value;
+        return value;
     }
 
-    public bool LoopBoolValue(bool Value, bool NextValue)
+    public bool LoopBoolValue(bool value, bool nextValue)
     {
-        if (Value == NextValue)
+        if (value == nextValue)
         {
-            return !NextValue;
+            return !nextValue;
         }
         else
         {
-            return NextValue;
+            return nextValue;
         }
     }
 
-    public float CheckFloatLowLimit(float Value, float MinLimit)
+    public float CheckFloatLowLimit(float value, float minLimit)
     {
-        if (Value < MinLimit)
+        if (value < minLimit)
         {
-            Value = MinLimit;
+            value = minLimit;
         }
 
-        return Value;
+        return value;
     }
 
-    public float CheckFloatHighLimit(float Value, float MaxLimit)
+    public float CheckFloatHighLimit(float value, float maxLimit)
     {
-        if (Value > MaxLimit)
+        if (value > maxLimit)
         {
-            Value = MaxLimit;
+            value = maxLimit;
         }
 
-        return Value;
+        return value;
     }
 
     public int intExponentiate(int value, int extent)
@@ -164,19 +164,19 @@ public class Utilits
 
     public void intSplit(int value, List<int> listForWriting)
     {
-        int ValueLenght = value.ToString().Length;
-        int extent = ValueLenght;
+        int valueLenght = value.ToString().Length;
+        int extent = valueLenght;
 
         listForWriting.Clear();
 
-        for (int i = 0; i < ValueLenght; i++)
+        for (int i = 0; i < valueLenght; i++)
         {
-            int TenInextent = intExponentiate(10, extent) / 10;
-            int BiggestNumberInValue = value / TenInextent;
+            int tenInextent = intExponentiate(10, extent) / 10;
+            int biggestNumberInValue = value / tenInextent;
 
-            listForWriting.Add(BiggestNumberInValue);
+            listForWriting.Add(biggestNumberInValue);
 
-            value = value - BiggestNumberInValue * TenInextent;
+            value = value - biggestNumberInValue * tenInextent;
             extent--;
         }
     }

@@ -3,7 +3,7 @@ using TMPro;
 
 public class DeveloperSettings : MonoBehaviour
 {
-    [SerializeField] private DebugUIController _debugUIController;
+    [SerializeField] private DebugGroupSwitcher _debugGroupSwitcher;
     [SerializeField] private DebugInfoDrawer _debugInfoDrawer;
     [SerializeField] private ScoreUpdater _scoreUpdater;
     [SerializeField] private GraphicsMover _graphicsMover;
@@ -12,14 +12,14 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private SpeedChanger _speedChanger;
     [SerializeField] private UIController _UIController;
     [SerializeField] private DebugInfoHandler _debugInfoHandler;
-    [SerializeField] private PostGenerator _postGenerator;
+    [SerializeField] private PostController _postController;
 
     [SerializeField] private Rigidbody2D _characterRB;
 
     [SerializeField] private TextMeshProUGUI _immortalityCondition;
     [SerializeField] private TextMeshProUGUI _postSpeedCondition;
     [SerializeField] private TextMeshProUGUI _characterSpeedCondition;
-    [SerializeField] private TextMeshProUGUI _startGameSpeedCondition;
+    [SerializeField] private TextMeshProUGUI _minGameSpeedCondition;
     [SerializeField] private TextMeshProUGUI _currentGameSpeedCondition;
     [SerializeField] private TextMeshProUGUI _maxGameSpeedCondition;
     [SerializeField] private TextMeshProUGUI _addGameSpeedForFrameCondition;
@@ -46,12 +46,12 @@ public class DeveloperSettings : MonoBehaviour
     {
         _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0");
         _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0");
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+        _minGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
         _currentGameSpeedCondition.text = Time.timeScale.ToString("0.00");
         _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
         _addGameSpeedForFrameFactorCondition.text = _speedChanger.SpeedChangeFactor.ToString("0.0");
-        _difficultCoefForGenerationCondition.text = _postGenerator.AddDifficultCoefForGeneration.ToString("0.000");
+        _difficultCoefForGenerationCondition.text = _postController.AddDifficultCoefForGeneration.ToString("0.000");
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
@@ -73,30 +73,30 @@ public class DeveloperSettings : MonoBehaviour
         }
     }
 
-    public void ChangeGraphicsSpeed(float NewSpeed)
+    public void ChangeGraphicsSpeed(float newSpeed)
     {
-        _graphicsMover.GraphicsSpeed = _graphicsMover.GraphicsSpeed + NewSpeed;
+        _graphicsMover.GraphicsSpeed = _graphicsMover.GraphicsSpeed + newSpeed;
         _postSpeedCondition.text = _graphicsMover.GraphicsSpeed.ToString("0");
     }
 
-    public void ChangeCharacterSpeed(float NewSpeed)
+    public void ChangeCharacterSpeed(float newSpeed)
     {
-        _characterMover.CharacterSpeed = _characterMover.CharacterSpeed + NewSpeed;
+        _characterMover.CharacterSpeed = _characterMover.CharacterSpeed + newSpeed;
         _characterSpeedCondition.text = _characterMover.CharacterSpeed.ToString("0");
     }
 
-    public void ChangeStartGameSpeed(float NewSpeed)
+    public void ChangeStartGameSpeed(float newSpeed)
     {
-        _speedChanger.MinSpeed = _speedChanger.MinSpeed + NewSpeed;
+        _speedChanger.MinSpeed = _speedChanger.MinSpeed + newSpeed;
 
-        _speedChanger.MinSpeed = _utilits.CheckFloatHighLimit(_speedChanger.MinSpeed, _speedChanger.MaxSpeed);
+        _speedChanger.MinSpeed = _utilits.CheckFloatHighLimit(_speedChanger.MinSpeed, Time.timeScale);
 
-        _startGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+        _minGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
     }
 
-    public void ChangeCurrentGameSpeed(float NewSpeed)
+    public void ChangeCurrentGameSpeed(float newSpeed)
     {
-        Time.timeScale = Time.timeScale + NewSpeed;
+        Time.timeScale = Time.timeScale + newSpeed;
 
         Time.timeScale = _utilits.CheckFloatHighLimit(Time.timeScale, _speedChanger.MaxSpeed);
         Time.timeScale = _utilits.CheckFloatLowLimit(Time.timeScale, _speedChanger.MinSpeed);
@@ -104,74 +104,74 @@ public class DeveloperSettings : MonoBehaviour
         _currentGameSpeedCondition.text = Time.timeScale.ToString("0.00");
     }
 
-    public void ChangeMaxGameSpeed(float NewSpeed)
+    public void ChangeMaxGameSpeed(float newSpeed)
     {
-        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed + NewSpeed;
+        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed + newSpeed;
 
         _speedChanger.MaxSpeed = _utilits.CheckFloatLowLimit(_speedChanger.MaxSpeed, Time.timeScale);
 
         _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
     }
 
-    public void ChangeSpeedForFrame(float NewSpeed)
+    public void ChangeSpeedForFrame(float newSpeed)
     {
-        _speedChanger.SpeedForFrame = _speedChanger.SpeedForFrame + NewSpeed;
+        _speedChanger.SpeedForFrame = _speedChanger.SpeedForFrame + newSpeed;
 
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
     }
 
-    public void ChangeSpeedForFrameFactor(float NewFactor)
+    public void ChangeSpeedForFrameFactor(float newFactor)
     {
-        _speedChanger.SpeedChangeFactor = _speedChanger.SpeedChangeFactor + NewFactor;
+        _speedChanger.SpeedChangeFactor = _speedChanger.SpeedChangeFactor + newFactor;
 
         _addGameSpeedForFrameFactorCondition.text = _speedChanger.SpeedChangeFactor.ToString("0.0");
     }
 
-    public void ChangeDifficultCoefForGeneration(float NewValue)
+    public void ChangeDifficultCoefForGeneration(float newValue)
     {
-        _postGenerator.AddDifficultCoefForGeneration = _postGenerator.AddDifficultCoefForGeneration + NewValue;
+        _postController.AddDifficultCoefForGeneration = _postController.AddDifficultCoefForGeneration + newValue;
 
-        _difficultCoefForGenerationCondition.text = _postGenerator.AddDifficultCoefForGeneration.ToString("0.000");
+        _difficultCoefForGenerationCondition.text = _postController.AddDifficultCoefForGeneration.ToString("0.000");
     }
 
-    public void ChangeCharacterMass(float NewValue)
+    public void ChangeCharacterMass(float newValue)
     {
-        _characterRB.mass = _characterRB.mass + NewValue;
+        _characterRB.mass = _characterRB.mass + newValue;
 
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
     }
 
-    public void ChangeCharacterAngularDrag(float NewValue)
+    public void ChangeCharacterAngularDrag(float newValue)
     {
-        _characterRB.angularDrag = _characterRB.angularDrag + NewValue;
+        _characterRB.angularDrag = _characterRB.angularDrag + newValue;
 
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
     }
 
-    public void ChangeCharacterGravity(float NewValue)
+    public void ChangeCharacterGravity(float newValue)
     {
-        _characterRB.gravityScale = _characterRB.gravityScale + NewValue;
+        _characterRB.gravityScale = _characterRB.gravityScale + newValue;
 
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
     }
 
     public void EnableDebugMode(bool condition)
     {
-        condition = _utilits.LoopBoolValue(_debugUIController.enabled, condition);
+        condition = _utilits.LoopBoolValue(_debugGroupSwitcher.enabled, condition);
 
         if (condition == true)
         {
             _UIController.SetPreset("Debug");
             _debugInfoHandler.handle = true;
-            _debugUIController.enabled = true;
+            _debugGroupSwitcher.enabled = true;
             _debugModeCondition.text = _On;
-            _debugUIController.SwitchHandleGroup(0);
+            _debugGroupSwitcher.SwitchHandleGroup(0);
         }
         else
         {
             _UIController.SetInvertPreset("Debug");
             _debugInfoHandler.handle = false;
-            _debugUIController.enabled = false;
+            _debugGroupSwitcher.enabled = false;
             _debugModeCondition.text = _Off;
             _debugInfoDrawer.DestroyAll();
         }
