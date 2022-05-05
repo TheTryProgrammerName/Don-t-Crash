@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectControl : MonoBehaviour
+public class ControlSettings : MonoBehaviour
 {
 
 }

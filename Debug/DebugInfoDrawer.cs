@@ -55,5 +55,6 @@ public class DebugInfoDrawer : Instantiator
         }
 
         _instantiateObjects.Clear();
+        _text.Clear();
     }
 }

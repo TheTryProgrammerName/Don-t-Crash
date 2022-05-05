@@ -16,7 +16,7 @@ public class Timer : MonoBehaviour
         _isPause = false;
     }
 
-    public void SetTime(float time)
+    public void setTime(float time)
     {
         this.time = time;
     }

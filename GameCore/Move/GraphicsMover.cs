@@ -35,10 +35,10 @@ public class GraphicsMover : MonoBehaviour
     {
         for (int i = 0; i < _postsPool.ObjectsCount; i++)
         {
-            _postsTransform[i].position = _postsStartPositions[i];
+            _postsTransform[i].localPosition = _postsStartPositions[i];
         }
 
-        _startLineRB.transform.position = _startLineStartPosition;
+        _startLineRB.transform.localPosition = _startLineStartPosition;
     }
 
     public void pause()

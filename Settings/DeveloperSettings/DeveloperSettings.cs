@@ -12,7 +12,8 @@ public class DeveloperSettings : MonoBehaviour
     [SerializeField] private SpeedChanger _speedChanger;
     [SerializeField] private UIController _UIController;
     [SerializeField] private DebugInfoHandler _debugInfoHandler;
-    [SerializeField] private PostController _postController;
+    [SerializeField] private PostsController _postsController;
+    [SerializeField] private SpecialAbility _specialAbility;
 
     [SerializeField] private Rigidbody2D _characterRB;
 
@@ -32,8 +33,10 @@ public class DeveloperSettings : MonoBehaviour
 
     private Utilits _utilits;
 
-    private string _On = "Вкл";
-    private string _Off = "Выкл";
+    private const string _On = "Вкл";
+    private const string _Off = "Выкл";
+
+    private const float _timeScaleMinValue = 0.1f;
 
     public void Initizlize()
     {
@@ -51,7 +54,7 @@ public class DeveloperSettings : MonoBehaviour
         _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
         _addGameSpeedForFrameCondition.text = _speedChanger.SpeedForFrame.ToString("0.0000");
         _addGameSpeedForFrameFactorCondition.text = _speedChanger.SpeedChangeFactor.ToString("0.0");
-        _difficultCoefForGenerationCondition.text = _postController.AddDifficultCoefForGeneration.ToString("0.000");
+        _difficultCoefForGenerationCondition.text = _postsController.AddDifficultCoefForGeneration.ToString("0.000");
         _characterMassCondition.text = _characterRB.mass.ToString("0.00");
         _characterAngularDragCondition.text = _characterRB.angularDrag.ToString("0.00");
         _characterGravityCondition.text = _characterRB.gravityScale.ToString("0.00");
@@ -87,30 +90,48 @@ public class DeveloperSettings : MonoBehaviour
 
     public void ChangeStartGameSpeed(float newSpeed)
     {
-        _speedChanger.MinSpeed = _speedChanger.MinSpeed + newSpeed;
+        if (!_specialAbility.isActive)
+        {
+            float minSpeed = _speedChanger.MinSpeed + newSpeed;
 
-        _speedChanger.MinSpeed = _utilits.CheckFloatHighLimit(_speedChanger.MinSpeed, Time.timeScale);
+            minSpeed = _utilits.CheckFloatHighLimit(minSpeed, Time.timeScale);
+            minSpeed = _utilits.CheckFloatLowLimit(minSpeed, _timeScaleMinValue);
 
-        _minGameSpeedCondition.text = _speedChanger.MinSpeed.ToString("0.00");
+            _speedChanger.MinSpeed = minSpeed;
+            _speedChanger.CalculateExponentDevider();
+
+            _minGameSpeedCondition.text = minSpeed.ToString("0.00");
+        }
     }
 
     public void ChangeCurrentGameSpeed(float newSpeed)
     {
-        Time.timeScale = Time.timeScale + newSpeed;
+        if (!_specialAbility.isActive)
+        {
+            float timeScale = Time.timeScale + newSpeed;
 
-        Time.timeScale = _utilits.CheckFloatHighLimit(Time.timeScale, _speedChanger.MaxSpeed);
-        Time.timeScale = _utilits.CheckFloatLowLimit(Time.timeScale, _speedChanger.MinSpeed);
+            timeScale = _utilits.CheckFloatHighLimit(timeScale, _speedChanger.MaxSpeed);
+            timeScale = _utilits.CheckFloatLowLimit(timeScale, _speedChanger.MinSpeed);
 
-        _currentGameSpeedCondition.text = Time.timeScale.ToString("0.00");
+            Time.timeScale = timeScale;
+
+            _currentGameSpeedCondition.text = timeScale.ToString("0.00");
+        }
     }
 
     public void ChangeMaxGameSpeed(float newSpeed)
     {
-        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed + newSpeed;
+        if (!_specialAbility.isActive)
+        {
+            float maxSpeed = _speedChanger.MaxSpeed + newSpeed;
 
-        _speedChanger.MaxSpeed = _utilits.CheckFloatLowLimit(_speedChanger.MaxSpeed, Time.timeScale);
+            maxSpeed = _utilits.CheckFloatLowLimit(maxSpeed, Time.timeScale);
 
-        _maxGameSpeedCondition.text = _speedChanger.MaxSpeed.ToString("0.00");
+            _speedChanger.MaxSpeed = maxSpeed;
+            _speedChanger.CalculateExponentDevider();
+
+            _maxGameSpeedCondition.text = maxSpeed.ToString("0.00");
+        }
     }
 
     public void ChangeSpeedForFrame(float newSpeed)
@@ -129,9 +150,9 @@ public class DeveloperSettings : MonoBehaviour
 
     public void ChangeDifficultCoefForGeneration(float newValue)
     {
-        _postController.AddDifficultCoefForGeneration = _postController.AddDifficultCoefForGeneration + newValue;
+        _postsController.AddDifficultCoefForGeneration = _postsController.AddDifficultCoefForGeneration + newValue;
 
-        _difficultCoefForGenerationCondition.text = _postController.AddDifficultCoefForGeneration.ToString("0.000");
+        _difficultCoefForGenerationCondition.text = _postsController.AddDifficultCoefForGeneration.ToString("0.000");
     }
 
     public void ChangeCharacterMass(float newValue)

@@ -41,7 +41,7 @@ public class CharacterResizer : MonoBehaviour
         _characterTransform.localScale = _characterSize;
         _groundShadowTransform.localScale = _groundShadowSize;
 
-        _groundShadowTransform.position = _groundShadowPosition;
+        _groundShadowTransform.localPosition = _groundShadowPosition;
 
         for (int i = 0; i < _postsLeftShadows.Length - 1; i++)
         {

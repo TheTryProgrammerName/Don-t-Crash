@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 
-public class CharacterController : SwipeManager
+public class Control : SwipeManager
 {
-    [SerializeField] private CharacterMover _characterMover;
+    [SerializeField] private Mover _mover;
     [SerializeField] private SpecialAbility _specialAbility;
 
     protected override void SwipeUp()
     {
-        _characterMover.ChangeDirectionUp();
+        _mover.ChangeCharacterDirectionUp();
     }
 
     protected override void SwipeDown()
     {
-        _characterMover.ChangeDirectionDown();
+        _mover.ChangeCharacterDirectionDown();
     }
 
     protected override void SwipeRight()

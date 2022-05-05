@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class SpecialAbility : MonoBehaviour
@@ -7,17 +8,16 @@ public class SpecialAbility : MonoBehaviour
     [SerializeField] private CharacterResizer _characterSizeMax;
     [SerializeField] private CharacterResizer _characterSizeMin;
 
-    [SerializeField] private SpeedChanger _speedChanger;
-
     [SerializeField] private Rigidbody2D _characterRigidbody;
 
     private DebugInfoSender _debugInfoSender;
     private Timer _timer;
 
-    private float _timeToNormolize = 2f, _timeSpeedBoost = 6f;
-    private float _timeScaleBeforeBoost;
+    private IAbility[] _IAbilitys;
 
-    private bool _isActive;
+    private const float _timeToDissaply = 2f;
+
+    public bool isActive;
     public bool characterIsAlive { private get; set; }
 
     public void Initialize()
@@ -29,6 +29,8 @@ public class SpecialAbility : MonoBehaviour
         InitializeDebug();
 
         _timer = _timerInstantiator.InstantiateTimer();
+
+        _IAbilitys = FindObjectsOfType<MonoBehaviour>().OfType<IAbility>().ToArray();
     }
 
     private void InitializeDebug()
@@ -38,9 +40,9 @@ public class SpecialAbility : MonoBehaviour
 
     public void reset()
     {
-        if (_isActive)
+        if (isActive)
         {
-            Normolaze();
+            Dissaply();
             StopAllCoroutines();
             _timer.time = 0;
             _debugInfoSender.SendInfo("SpecialAbility", "TimeLeft", _timer.time);
@@ -59,31 +61,42 @@ public class SpecialAbility : MonoBehaviour
 
     public void Apply()
     {
-        if (!_isActive)
+        if (!isActive)
         {
             _characterRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+
             _characterSizeMin.Apply();
 
-            _speedChanger.MaxSpeed = _speedChanger.MaxSpeed * _timeSpeedBoost;
-            _timeScaleBeforeBoost = Time.timeScale;
-            Time.timeScale = Time.timeScale * _timeSpeedBoost;
+            foreach (IAbility iAbility in _IAbilitys)
+            {
+                iAbility.ApplyAbility();
+            }
 
-            _timer.SetTime(_timeToNormolize);
+            _timer.setTime(_timeToDissaply);
             _timer.play();
 
             StartCoroutine(CheckTimerTime());
 
-            _isActive = true;
+            isActive = true;
+        }
+        else
+        {
+            _timer.setTime(_timeToDissaply);
         }
     }
 
-    private void Normolaze()
+    private void Dissaply()
     {
         _characterSizeMax.Apply();
+
+        foreach (IAbility iAbility in _IAbilitys)
+        {
+            iAbility.DissapplyAbility();
+        }
+
         _characterRigidbody.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
 
-        _speedChanger.MaxSpeed = _speedChanger.MaxSpeed / _timeSpeedBoost;
-        _isActive = false;
+        isActive = false;
     }
 
     private IEnumerator CheckTimerTime()
@@ -92,11 +105,10 @@ public class SpecialAbility : MonoBehaviour
         {
             yield return new WaitForFixedUpdate();
 
-            _debugInfoSender.SendInfo("Mover", "FastFlyTime", _timer.time);
+            _debugInfoSender.SendInfo("SpecialAbility", "TimeLeft", _timer.time);
         }
 
-        Normolaze();
-        Time.timeScale = _timeScaleBeforeBoost + Time.timeScale - _timeScaleBeforeBoost * _timeSpeedBoost;
+        Dissaply();
 
         yield break;
     }

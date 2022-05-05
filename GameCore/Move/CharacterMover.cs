@@ -12,7 +12,7 @@ public class CharacterMover : MonoBehaviour
 
     public void reset()
     {
-        _characterRigidbody.transform.position = _startPosition;
+        _characterRigidbody.transform.localPosition = _startPosition;
         _characterRigidbody.velocity = Vector2.zero;
 
         _direction = -transform.up;

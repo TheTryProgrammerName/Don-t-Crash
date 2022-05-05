@@ -33,25 +33,25 @@ public class SkinsChanger : MonoBehaviour
 
     public void NextSkin()
     {
-        _skinNumber = _utilits.LoopIntValue(_skinNumber += 1, 0, 1);
+        _utilits.LoopIntValue(_skinNumber += 1, 0, 1);
         ChangeSkin(_skinNumber);
     }
 
     public void LastSkin()
     {
-        _skinNumber = _utilits.LoopIntValue(_skinNumber -= 1, 0, 1);
+        _utilits.LoopIntValue(_skinNumber -= 1, 0, 1);
         ChangeSkin(_skinNumber);
     }
 
     public void NextColor()
     {
-        _colorNumber = _utilits.LoopIntValue(_colorNumber += 1, 0, 1);
+        _utilits.LoopIntValue(_colorNumber += 1, 0, 1);
         ChangeColor(_colorNumber);
     }
 
     public void LastColor()
     {
-        _colorNumber = _utilits.LoopIntValue(_colorNumber -= 1, 0, 1);
+        _utilits.LoopIntValue(_colorNumber -= 1, 0, 1);
         ChangeColor(_colorNumber);
     }
 

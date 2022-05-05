@@ -36,6 +36,16 @@ public class Mover : MonoBehaviour
         _characterMover.unPause();
     }
 
+    public void ChangeCharacterDirectionUp()
+    {
+        _characterMover.ChangeDirectionUp();
+    }
+
+    public void ChangeCharacterDirectionDown()
+    {
+        _characterMover.ChangeDirectionDown();
+    }
+
     private void FixedUpdate()
     {
         if (!_isPause && characterIsAlive)

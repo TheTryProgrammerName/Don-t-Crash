@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PostController : MonoBehaviour
+public class PostsController : MonoBehaviour
 {
     [SerializeField] private ObjectsPool _postsPool;
 
